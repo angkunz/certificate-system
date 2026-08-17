@@ -106,6 +106,8 @@ export default function CertificateTemplate({
 
   const hidden = (key: keyof CertLayout) => !layout[key].visible ? { display: 'none' } : {};
   const sz = (key: keyof CertLayout) => (layout[key]?.size ?? 100) / 100;
+  // Map 'align' -> CSS textAlign (left/center/right already match)
+  const ta = (key: keyof CertLayout): React.CSSProperties['textAlign'] => layout[key].align;
 
   return (
     <div
@@ -132,25 +134,25 @@ export default function CertificateTemplate({
       </div>
 
       {/* ── Org Name ── */}
-      <div style={{ ...el('orgName'), ...hidden('orgName'), color: 'rgba(255,255,255,0.95)', fontWeight: 700, fontSize: `calc(clamp(8px,1.8%,16px) * ${sz('orgName')})`, maxWidth: '40%', lineHeight: 1.3 }}
+      <div style={{ ...el('orgName'), ...hidden('orgName'), color: 'rgba(255,255,255,0.95)', fontWeight: 700, fontSize: `calc(clamp(8px,1.8%,16px) * ${sz('orgName')})`, maxWidth: '40%', lineHeight: 1.3, textAlign: ta('orgName') }}
         onMouseDown={startDrag('orgName')} onTouchStart={startDrag('orgName')}>
         {org.name}
       </div>
 
       {/* ── Title ── */}
-      <div style={{ ...el('title'), ...hidden('title'), fontFamily: "'Playfair Display','Sarabun',serif", fontSize: `calc(clamp(16px,4.5%,40px) * ${sz('title')})`, fontWeight: 700, color: '#fcd34d', letterSpacing: '0.08em', textShadow: '0 2px 8px rgba(0,0,0,0.4)', whiteSpace: 'nowrap' }}
+      <div style={{ ...el('title'), ...hidden('title'), fontFamily: "'Playfair Display','Sarabun',serif", fontSize: `calc(clamp(16px,4.5%,40px) * ${sz('title')})`, fontWeight: 700, color: '#fcd34d', letterSpacing: '0.08em', textShadow: '0 2px 8px rgba(0,0,0,0.4)', whiteSpace: 'nowrap', textAlign: ta('title') }}
         onMouseDown={startDrag('title')} onTouchStart={startDrag('title')}>
         เกียรติบัตร
       </div>
 
       {/* ── Present Text ── */}
-      <div style={{ ...el('presentText'), ...hidden('presentText'), color: 'rgba(255,255,255,0.8)', fontSize: `calc(clamp(7px,1.5%,14px) * ${sz('presentText')})`, whiteSpace: 'nowrap' }}
+      <div style={{ ...el('presentText'), ...hidden('presentText'), color: 'rgba(255,255,255,0.8)', fontSize: `calc(clamp(7px,1.5%,14px) * ${sz('presentText')})`, whiteSpace: 'nowrap', textAlign: ta('presentText') }}
         onMouseDown={startDrag('presentText')} onTouchStart={startDrag('presentText')}>
         มอบเกียรติบัตรฉบับนี้ให้แก่
       </div>
 
       {/* ── Recipient ── */}
-      <div style={{ ...el('recipient'), ...hidden('recipient'), fontFamily: "'Playfair Display','Sarabun',serif", fontSize: `calc(clamp(13px,3.5%,32px) * ${sz('recipient')})`, fontWeight: 700, color: 'white', textShadow: '0 2px 8px rgba(0,0,0,0.4)', whiteSpace: 'nowrap', maxWidth: '80%', overflow: 'hidden', textOverflow: 'ellipsis' }}
+      <div style={{ ...el('recipient'), ...hidden('recipient'), fontFamily: "'Playfair Display','Sarabun',serif", fontSize: `calc(clamp(13px,3.5%,32px) * ${sz('recipient')})`, fontWeight: 700, color: 'white', textShadow: '0 2px 8px rgba(0,0,0,0.4)', whiteSpace: 'nowrap', maxWidth: '80%', overflow: 'hidden', textOverflow: 'ellipsis', textAlign: ta('recipient') }}
         onMouseDown={startDrag('recipient')} onTouchStart={startDrag('recipient')}>
         {recipient.full_name}
       </div>
@@ -160,14 +162,14 @@ export default function CertificateTemplate({
         onMouseDown={startDrag('divider')} onTouchStart={startDrag('divider')} />
 
       {/* ── Activity ── */}
-      <div style={{ ...el('activity'), ...hidden('activity'), fontSize: `calc(clamp(9px,2%,17px) * ${sz('activity')})`, fontWeight: 700, color: '#fcd34d', whiteSpace: 'nowrap', maxWidth: '80%', overflow: 'hidden', textOverflow: 'ellipsis' }}
+      <div style={{ ...el('activity'), ...hidden('activity'), fontSize: `calc(clamp(9px,2%,17px) * ${sz('activity')})`, fontWeight: 700, color: '#fcd34d', whiteSpace: 'nowrap', maxWidth: '80%', overflow: 'hidden', textOverflow: 'ellipsis', textAlign: ta('activity') }}
         onMouseDown={startDrag('activity')} onTouchStart={startDrag('activity')}>
         {recipient.activity?.name}
       </div>
 
       {/* ── Description ── */}
       {(recipient.extra_details || recipient.activity?.description) && (
-        <div style={{ ...el('description'), ...hidden('description'), fontSize: `calc(clamp(7px,1.3%,12px) * ${sz('description')})`, color: 'rgba(255,255,255,0.75)', maxWidth: '70%', lineHeight: 1.5, textAlign: layout.description.align }}
+        <div style={{ ...el('description'), ...hidden('description'), fontSize: `calc(clamp(7px,1.3%,12px) * ${sz('description')})`, color: 'rgba(255,255,255,0.75)', maxWidth: '70%', lineHeight: 1.5, textAlign: ta('description') }}
           onMouseDown={startDrag('description')} onTouchStart={startDrag('description')}>
           {recipient.extra_details || recipient.activity?.description}
         </div>
@@ -175,7 +177,7 @@ export default function CertificateTemplate({
 
       {/* ── Date ── */}
       {certDate && (
-        <div style={{ ...el('date'), ...hidden('date'), fontSize: `calc(clamp(7px,1.3%,13px) * ${sz('date')})`, color: 'rgba(255,255,255,0.75)', whiteSpace: 'nowrap' }}
+        <div style={{ ...el('date'), ...hidden('date'), fontSize: `calc(clamp(7px,1.3%,13px) * ${sz('date')})`, color: 'rgba(255,255,255,0.75)', whiteSpace: 'nowrap', textAlign: ta('date') }}
           onMouseDown={startDrag('date')} onTouchStart={startDrag('date')}>
           วันที่ {formatDate(certDate)}
         </div>
