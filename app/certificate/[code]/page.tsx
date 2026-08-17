@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import { supabaseAdmin } from '@/lib/supabase';
 import type { Metadata } from 'next';
-import CertificateClient from './CertificateClient';
+import CertificatePageClient from './CertificatePageClient';
 
 interface Props { params: Promise<{ code: string }>; }
 
@@ -28,5 +28,5 @@ export default async function CertPage({ params }: Props) {
 
   const { data: org } = await supabaseAdmin.from('organization').select('*').eq('id', 1).single();
 
-  return <CertificateClient recipient={recipient} org={org} />;
+  return <CertificatePageClient recipient={recipient} org={org} />;
 }

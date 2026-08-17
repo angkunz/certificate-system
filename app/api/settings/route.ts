@@ -21,11 +21,17 @@ export async function POST(request: NextRequest) {
   }
 
   const body = await request.json();
-  const { name, logo_url, executive_name, executive_position, signature_url, theme_color } = body;
+  const { name, logo_url, executive_name, executive_position, signature_url, theme_color, cert_layout } = body;
+
+  const updatePayload: Record<string, unknown> = {
+    name, logo_url, executive_name, executive_position,
+    signature_url, theme_color, updated_at: new Date().toISOString(),
+  };
+  if (cert_layout !== undefined) updatePayload.cert_layout = cert_layout;
 
   const { data, error } = await supabaseAdmin
     .from('organization')
-    .update({ name, logo_url, executive_name, executive_position, signature_url, theme_color, updated_at: new Date().toISOString() })
+    .update(updatePayload)
     .eq('id', 1)
     .select()
     .single();
