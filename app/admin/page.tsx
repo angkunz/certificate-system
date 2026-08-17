@@ -14,7 +14,7 @@ interface OrgSettings {
 interface Activity { id: string; name: string; description: string; cert_date: string; background_url: string | null; status: string; }
 interface Recipient {
   id: string; activity_id: string; full_name: string; cert_code: string;
-  extra_details: string | null; cert_date: string | null; status: string;
+  extra_details: string | null; award: string | null; cert_date: string | null; status: string;
   activity?: Activity;
 }
 
@@ -49,7 +49,7 @@ export default function AdminPage() {
   // Recipient form
   const [showRecipModal, setShowRecipModal] = useState(false);
   const [selectedActId, setSelectedActId] = useState('');
-  const [recipForm, setRecipForm] = useState({ full_name: '', extra_details: '', cert_date: '' });
+  const [recipForm, setRecipForm] = useState({ full_name: '', extra_details: '', award: '', cert_date: '' });
   const [recipSaving, setRecipSaving] = useState(false);
   const [csvFile, setCsvFile] = useState<File | null>(null);
   const [importLoading, setImportLoading] = useState(false);
@@ -180,7 +180,7 @@ export default function AdminPage() {
       });
       if (!res.ok) { toast('เพิ่มรายชื่อไม่สำเร็จ', 'error'); return; }
       toast('เพิ่มรายชื่อสำเร็จ');
-      setRecipForm({ full_name: '', extra_details: '', cert_date: '' }); fetchAll();
+      setRecipForm({ full_name: '', extra_details: '', award: '', cert_date: '' }); fetchAll();
     } finally { setRecipSaving(false); }
   }
 
@@ -190,7 +190,7 @@ export default function AdminPage() {
     const text = await csvFile.text();
     const rows = text.trim().split('\n').slice(1).filter(Boolean).map(line => {
       const cols = line.split(',').map(c => c.replace(/^"|"$/g, '').trim());
-      return { full_name: cols[0] || '', extra_details: cols[1] || '', cert_date: cols[2] || '' };
+      return { full_name: cols[0] || '', extra_details: cols[1] || '', award: cols[2] || '', cert_date: cols[3] || '' };
     }).filter(r => r.full_name);
     if (!rows.length) { toast('ไม่พบข้อมูลในไฟล์ CSV', 'error'); setImportLoading(false); return; }
     const res = await fetch('/api/recipients', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'import', activity_id: selectedActId, rows }) });
@@ -632,6 +632,7 @@ export default function AdminPage() {
                           full_name: 'ชื่อ-นามสกุล ผู้รับเกียรติบัตร',
                           cert_code: 'DEMO-XXXXX',
                           extra_details: 'รายละเอียดเพิ่มเติม',
+                          award: 'รางวัลชนะเลิศ',
                           activity: { name:'ชื่อกิจกรรม/โครงการ', description:'รายละเอียดกิจกรรม', cert_date: today(), background_url: activities.find(a=>a.background_url)?.background_url || null },
                         }}
                         qrDataUrl={previewQRLayout}
@@ -837,6 +838,8 @@ export default function AdminPage() {
                 <>
                   <div className="form-group"><label className="form-label">ชื่อ-นามสกุล <span>*</span></label>
                     <input className="form-control" value={recipForm.full_name} onChange={e=>setRecipForm(f=>({...f,full_name:e.target.value}))} placeholder="ชื่อ นามสกุล" /></div>
+                  <div className="form-group"><label className="form-label">🏆 รางวัล/ผลงาน</label>
+                    <input className="form-control" value={recipForm.award} onChange={e=>setRecipForm(f=>({...f,award:e.target.value}))} placeholder="เช่น ชนะเลิศ, รองชนะเลิศ, ดีเด่น, เหรียญทอง" /></div>
                   <div className="form-group"><label className="form-label">รายละเอียดเพิ่มเติม</label>
                     <input className="form-control" value={recipForm.extra_details} onChange={e=>setRecipForm(f=>({...f,extra_details:e.target.value}))} placeholder="เช่น ตำแหน่ง หน่วยงาน" /></div>
                   <div className="form-group" style={{ marginBottom:0 }}>
@@ -849,7 +852,7 @@ export default function AdminPage() {
               {recipTab === 'csv' && (
                 <>
                   <div className="alert alert-info" style={{ marginBottom:12 }}>
-                    ℹ️ Format: <strong>full_name, extra_details, cert_date</strong><br />บรรทัดแรกเป็น header
+                    ℹ️ Format: <strong>full_name, extra_details, award, cert_date</strong><br />บรรทัดแรกเป็น header
                   </div>
                   <label className="upload-area" style={{ cursor:'pointer', padding:20 }}>
                     <div className="upload-icon">📄</div>

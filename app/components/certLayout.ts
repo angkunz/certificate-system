@@ -16,6 +16,7 @@ export interface CertLayout {
   title: CertElement;
   presentText: CertElement;
   recipient: CertElement;
+  award: CertElement;
   divider: CertElement;
   activity: CertElement;
   description: CertElement;
@@ -30,6 +31,7 @@ export const ELEMENT_LABELS: Record<keyof CertLayout, string> = {
   title:       '📜 หัวข้อ "เกียรติบัตร"',
   presentText: '📝 ข้อความมอบให้',
   recipient:   '👤 ชื่อผู้รับ',
+  award:       '🏆 รางวัล/ผลงาน',
   divider:     '➖ เส้นคั่น',
   activity:    '🎯 ชื่อกิจกรรม',
   description: '📋 รายละเอียด',
@@ -40,7 +42,7 @@ export const ELEMENT_LABELS: Record<keyof CertLayout, string> = {
 
 // Elements that support color/font customization (exclude logo, divider, qr)
 export const STYLABLE_ELEMENTS: (keyof CertLayout)[] = [
-  'orgName', 'title', 'presentText', 'recipient', 'activity', 'description', 'date', 'signature',
+  'orgName', 'title', 'presentText', 'recipient', 'award', 'activity', 'description', 'date', 'signature',
 ];
 
 export const DEFAULT_CERT_LAYOUT: CertLayout = {
@@ -49,6 +51,7 @@ export const DEFAULT_CERT_LAYOUT: CertLayout = {
   title:       { x: 50, y: 23, align: 'center', visible: true, size: 100 },
   presentText: { x: 50, y: 38, align: 'center', visible: true, size: 100 },
   recipient:   { x: 50, y: 45, align: 'center', visible: true, size: 100 },
+  award:       { x: 50, y: 52, align: 'center', visible: true, size: 100 },
   divider:     { x: 50, y: 57, align: 'center', visible: true, size: 100 },
   activity:    { x: 50, y: 62, align: 'center', visible: true, size: 100 },
   description: { x: 50, y: 70, align: 'center', visible: true, size: 100 },

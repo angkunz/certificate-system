@@ -16,7 +16,7 @@ interface Activity {
 }
 interface Recipient {
   id: string; activity_id: string; full_name: string; cert_code: string;
-  extra_details: string | null; cert_date: string | null; status: string;
+  extra_details: string | null; award: string | null; cert_date: string | null; status: string;
   activity?: Activity;
 }
 

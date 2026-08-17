@@ -4,7 +4,7 @@ import QRCode from 'qrcode';
 
 interface OrgSettings { name: string; logo_url: string | null; executive_name: string; executive_position: string; signature_url: string | null; }
 interface Activity { id: string; name: string; description: string; cert_date: string; background_url: string | null; }
-interface Recipient { id: string; full_name: string; cert_code: string; extra_details: string | null; cert_date: string | null; status: string; activity?: Activity; }
+interface Recipient { id: string; full_name: string; cert_code: string; extra_details: string | null; award: string | null; cert_date: string | null; status: string; activity?: Activity; }
 
 export default function CertificateClient({ recipient, org }: { recipient: Recipient; org: OrgSettings }) {
   const [qrDataUrl, setQrDataUrl] = useState('');
@@ -136,6 +136,12 @@ export default function CertificateClient({ recipient, org }: { recipient: Recip
                     <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 2 }}>กิจกรรม/โครงการ</div>
                     <div style={{ fontWeight: 600 }}>{recipient.activity?.name}</div>
                   </div>
+                  {recipient.award && (
+                    <div>
+                      <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 2 }}>🏆 รางวัล/ผลงาน</div>
+                      <div style={{ fontWeight: 600, color: 'var(--secondary-dark)' }}>{recipient.award}</div>
+                    </div>
+                  )}
                   {recipient.extra_details && (
                     <div>
                       <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 2 }}>รายละเอียดเพิ่มเติม</div>

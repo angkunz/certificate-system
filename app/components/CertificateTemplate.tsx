@@ -24,6 +24,7 @@ export interface CertRecipient {
   full_name: string;
   cert_code: string;
   extra_details?: string | null;
+  award?: string | null;
   cert_date?: string | null;
   activity?: CertActivity;
 }
@@ -166,6 +167,14 @@ export default function CertificateTemplate({
         onMouseDown={startDrag('recipient')} onTouchStart={startDrag('recipient')}>
         {recipient.full_name}
       </div>
+
+      {/* ── Award ── */}
+      {recipient.award && (
+        <div style={{ ...el('award'), ...hidden('award'), fontSize: `calc(clamp(11px,1.3vw,18px) * ${sz('award')})`, fontWeight: textStyle('award', '').fontWeight ?? 600, whiteSpace: 'nowrap', maxWidth: '70%', overflow: 'hidden', textOverflow: 'ellipsis', ...textStyle('award', '#fcd34d') }}
+          onMouseDown={startDrag('award')} onTouchStart={startDrag('award')}>
+          🏆 {recipient.award}
+        </div>
+      )}
 
       {/* ── Divider ── */}
       <div style={{ ...el('divider'), ...hidden('divider'), width: `calc(clamp(50px,8vw,100px) * ${sz('divider')})`, height: 2, background: layout.divider.color ? `linear-gradient(90deg,transparent,${layout.divider.color},transparent)` : 'linear-gradient(90deg,transparent,#fcd34d,transparent)' }}

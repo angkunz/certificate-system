@@ -23,11 +23,11 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 
   const { id } = await params;
   const body = await request.json();
-  const { full_name, extra_details, cert_date } = body;
+  const { full_name, extra_details, award, cert_date } = body;
 
   const { data, error } = await supabaseAdmin
     .from('recipients')
-    .update({ full_name, extra_details, cert_date })
+    .update({ full_name, extra_details, award, cert_date })
     .eq('id', id)
     .select()
     .single();

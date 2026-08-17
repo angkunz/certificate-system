@@ -7,7 +7,7 @@ import type { CertLayout } from '../../components/certLayout';
 
 interface OrgSettings { name: string; logo_url: string | null; executive_name: string; executive_position: string; signature_url: string | null; cert_layout?: Partial<CertLayout>; }
 interface Activity { id: string; name: string; description: string; cert_date: string; background_url: string | null; }
-interface Recipient { id: string; full_name: string; cert_code: string; extra_details: string | null; cert_date: string | null; status: string; activity?: Activity; }
+interface Recipient { id: string; full_name: string; cert_code: string; extra_details: string | null; award: string | null; cert_date: string | null; status: string; activity?: Activity; }
 
 export default function CertificatePageClient({ recipient, org }: { recipient: Recipient; org: OrgSettings }) {
   const [qrDataUrl, setQrDataUrl] = useState('');
@@ -89,6 +89,9 @@ export default function CertificatePageClient({ recipient, org }: { recipient: R
                 <div style={{ display:'flex', flexDirection:'column', gap:14 }}>
                   <div><div style={{ fontSize:12, color:'var(--text-muted)', marginBottom:3 }}>ชื่อ-นามสกุล</div><div style={{ fontWeight:700, fontSize:17 }}>{recipient.full_name}</div></div>
                   <div><div style={{ fontSize:12, color:'var(--text-muted)', marginBottom:3 }}>กิจกรรม/โครงการ</div><div style={{ fontWeight:600 }}>{recipient.activity?.name}</div></div>
+                  {recipient.award && (
+                    <div><div style={{ fontSize:12, color:'var(--text-muted)', marginBottom:3 }}>🏆 รางวัล/ผลงาน</div><div style={{ fontWeight:600, color:'var(--secondary-dark)' }}>{recipient.award}</div></div>
+                  )}
                   {recipient.extra_details && (
                     <div><div style={{ fontSize:12, color:'var(--text-muted)', marginBottom:3 }}>รายละเอียดเพิ่มเติม</div><div>{recipient.extra_details}</div></div>
                   )}
