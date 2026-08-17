@@ -138,7 +138,7 @@ export default function CertificateClient({ recipient, org }: { recipient: Recip
                   </div>
                   {recipient.award && (
                     <div>
-                      <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 2 }}>🏆 รางวัล/ผลงาน</div>
+                      <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 2 }}>รางวัล/ผลงาน</div>
                       <div style={{ fontWeight: 600, color: 'var(--secondary-dark)' }}>{recipient.award}</div>
                     </div>
                   )}

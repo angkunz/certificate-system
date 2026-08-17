@@ -139,7 +139,7 @@ export default function CertificateTemplate({
         onMouseDown={startDrag('logo')} onTouchStart={startDrag('logo')}>
         {org.logo_url
           ? <img src={org.logo_url} alt="logo" crossOrigin="anonymous"
-              style={{ width: `calc(clamp(32px,5vw,60px) * ${sz('logo')})`, height: `calc(clamp(32px,5vw,60px) * ${sz('logo')})`, borderRadius: 8, objectFit: 'contain', border: '2px solid rgba(255,255,255,0.4)', display: 'block', background: 'rgba(255,255,255,0.1)' }} />
+              style={{ height: `calc(clamp(32px,5vw,60px) * ${sz('logo')})`, width: 'auto', objectFit: 'contain', display: 'block' }} />
           : <div style={{ width: `calc(clamp(32px,5vw,60px) * ${sz('logo')})`, height: `calc(clamp(32px,5vw,60px) * ${sz('logo')})`, borderRadius: 8, background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: `calc(clamp(16px,2.5vw,28px) * ${sz('logo')})`, color: 'white' }}>🏛️</div>
         }
       </div>
@@ -172,7 +172,7 @@ export default function CertificateTemplate({
       {recipient.award && (
         <div style={{ ...el('award'), ...hidden('award'), fontSize: `calc(clamp(11px,1.3vw,18px) * ${sz('award')})`, fontWeight: textStyle('award', '').fontWeight ?? 600, whiteSpace: 'nowrap', maxWidth: '70%', overflow: 'hidden', textOverflow: 'ellipsis', ...textStyle('award', '#fcd34d') }}
           onMouseDown={startDrag('award')} onTouchStart={startDrag('award')}>
-          🏆 {recipient.award}
+          {recipient.award}
         </div>
       )}
 

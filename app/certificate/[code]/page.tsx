@@ -21,7 +21,7 @@ export default async function CertPage({ params }: Props) {
     .from('recipients')
     .select('*, activity:activities(id, name, description, cert_date, background_url)')
     .eq('cert_code', code)
-    .eq('status', 'approved')
+    .neq('status', 'rejected')
     .single();
 
   if (!recipient) notFound();

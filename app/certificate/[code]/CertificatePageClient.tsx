@@ -90,7 +90,7 @@ export default function CertificatePageClient({ recipient, org }: { recipient: R
                   <div><div style={{ fontSize:12, color:'var(--text-muted)', marginBottom:3 }}>ชื่อ-นามสกุล</div><div style={{ fontWeight:700, fontSize:17 }}>{recipient.full_name}</div></div>
                   <div><div style={{ fontSize:12, color:'var(--text-muted)', marginBottom:3 }}>กิจกรรม/โครงการ</div><div style={{ fontWeight:600 }}>{recipient.activity?.name}</div></div>
                   {recipient.award && (
-                    <div><div style={{ fontSize:12, color:'var(--text-muted)', marginBottom:3 }}>🏆 รางวัล/ผลงาน</div><div style={{ fontWeight:600, color:'var(--secondary-dark)' }}>{recipient.award}</div></div>
+                    <div><div style={{ fontSize:12, color:'var(--text-muted)', marginBottom:3 }}>รางวัล/ผลงาน</div><div style={{ fontWeight:600, color:'var(--secondary-dark)' }}>{recipient.award}</div></div>
                   )}
                   {recipient.extra_details && (
                     <div><div style={{ fontSize:12, color:'var(--text-muted)', marginBottom:3 }}>รายละเอียดเพิ่มเติม</div><div>{recipient.extra_details}</div></div>

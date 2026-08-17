@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
       .from('recipients')
       .select('*, activity:activities(id, name, description, cert_date, background_url)')
       .ilike('full_name', `%${q}%`)
-      .eq('status', 'approved');
+      .neq('status', 'rejected');
     if (error) return NextResponse.json({ error }, { status: 500 });
     return NextResponse.json({ data });
   }
@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
       .from('recipients')
       .select('*, activity:activities(id, name, description, cert_date, background_url)')
       .eq('cert_code', code)
-      .eq('status', 'approved')
+      .neq('status', 'rejected')
       .single();
     if (error) return NextResponse.json({ error: 'ไม่พบเกียรติบัตร' }, { status: 404 });
     return NextResponse.json({ data });
@@ -108,6 +108,7 @@ export async function POST(request: NextRequest) {
       award: row.award || null,
       cert_date: row.cert_date || null,
       cert_code: generateCertCode(activityName),
+      status: 'approved',
     }));
     const { data, error } = await supabaseAdmin.from('recipients').insert(toInsert).select();
     if (error) return NextResponse.json({ error }, { status: 500 });
@@ -122,7 +123,7 @@ export async function POST(request: NextRequest) {
   const cert_code = generateCertCode(activityName);
   const { data, error } = await supabaseAdmin
     .from('recipients')
-    .insert([{ activity_id, full_name, extra_details, award: award || null, cert_date: cert_date || null, cert_code }])
+    .insert([{ activity_id, full_name, extra_details, award: award || null, cert_date: cert_date || null, cert_code, status: 'approved' }])
     .select()
     .single();
 
