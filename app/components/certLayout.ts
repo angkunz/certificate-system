@@ -6,6 +6,8 @@ export interface CertElement {
   align: 'left' | 'center' | 'right';
   visible: boolean;
   size?: number;   // 50–200 (% scale, default 100)
+  color?: string;  // hex color override (empty = use default)
+  fontStyle?: 'normal' | 'italic' | 'bold-italic'; // font style override
 }
 
 export interface CertLayout {
@@ -35,6 +37,11 @@ export const ELEMENT_LABELS: Record<keyof CertLayout, string> = {
   signature:   '✍️ ลายเซ็น',
   qr:          '🔗 QR Code',
 };
+
+// Elements that support color/font customization (exclude logo, divider, qr)
+export const STYLABLE_ELEMENTS: (keyof CertLayout)[] = [
+  'orgName', 'title', 'presentText', 'recipient', 'activity', 'description', 'date', 'signature',
+];
 
 export const DEFAULT_CERT_LAYOUT: CertLayout = {
   logo:        { x: 6,  y: 7,  align: 'left',   visible: true, size: 100 },

@@ -2,7 +2,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import QRCode from 'qrcode';
 import CertificateTemplate from '../components/CertificateTemplate';
-import { mergeLayout, DEFAULT_CERT_LAYOUT, ELEMENT_LABELS } from '../components/certLayout';
+import { mergeLayout, DEFAULT_CERT_LAYOUT, ELEMENT_LABELS, STYLABLE_ELEMENTS } from '../components/certLayout';
 import type { CertLayout } from '../components/certLayout';
 
 interface User { id: string; username: string; role: string; displayName: string; }
@@ -647,12 +647,12 @@ export default function AdminPage() {
                       </div>
                     )}
 
-                    {/* 📐 Element Size & Alignment Controls Panel */}
+                    {/* 📐 Element Size, Alignment, Color & Style Controls Panel */}
                     <div style={{ marginTop:24, padding:16, background:'var(--bg)', borderRadius:12, border:'1px solid var(--border)' }}>
                       <h4 style={{ fontSize:14, fontWeight:700, marginBottom:12, display:'flex', alignItems:'center', gap:8 }}>
-                        📐 ปรับขนาดและแนวจัดวาง (Size & Alignment)
+                        📐 ปรับขนาด ตำแหน่ง สี และรูปแบบตัวอักษร
                       </h4>
-                      <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(260px, 1fr))', gap:12 }}>
+                      <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(280px, 1fr))', gap:12 }}>
                         {(Object.keys(ELEMENT_LABELS) as (keyof CertLayout)[]).map(key => (
                           <div key={key} style={{ padding:12, background:'var(--card-bg, #ffffff)', borderRadius:8, border:'1px solid var(--border)', display:'flex', flexDirection:'column', gap:8 }}>
                             <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between' }}>
@@ -666,7 +666,7 @@ export default function AdminPage() {
                               </button>
                             </div>
 
-                            {/* Alignment */}
+                            {/* Alignment — snaps x position */}
                             <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between' }}>
                               <span style={{ fontSize:12, color:'var(--text-muted)' }}>จัดตำแหน่ง:</span>
                               <div style={{ display:'flex', gap:3 }}>
@@ -674,10 +674,13 @@ export default function AdminPage() {
                                   <button
                                     key={align}
                                     className={`btn btn-xs ${certLayout[key].align === align ? 'btn-primary' : 'btn-outline'}`}
-                                    style={{ padding:'2px 6px', fontSize:10 }}
-                                    onClick={() => setCertLayout(l => ({ ...l, [key]: { ...l[key], align } }))}
+                                    style={{ padding:'2px 8px', fontSize:11 }}
+                                    onClick={() => {
+                                      const snapX = align === 'left' ? 8 : align === 'right' ? 92 : 50;
+                                      setCertLayout(l => ({ ...l, [key]: { ...l[key], align, x: snapX } }));
+                                    }}
                                   >
-                                    {align === 'left' ? 'ชิดซ้าย' : align === 'center' ? 'กลาง' : 'ชิดขวา'}
+                                    {align === 'left' ? '◀ ซ้าย' : align === 'center' ? '● กลาง' : 'ขวา ▶'}
                                   </button>
                                 ))}
                               </div>
@@ -686,7 +689,7 @@ export default function AdminPage() {
                             {/* Size Slider */}
                             <div style={{ display:'flex', flexDirection:'column', gap:4 }}>
                               <div style={{ display:'flex', justifyContent:'space-between', fontSize:12 }}>
-                                <span style={{ color:'var(--text-muted)' }}>ขนาด (Size):</span>
+                                <span style={{ color:'var(--text-muted)' }}>ขนาด:</span>
                                 <span style={{ fontWeight:700, color:'var(--primary)' }}>{certLayout[key].size ?? 100}%</span>
                               </div>
                               <div style={{ display:'flex', alignItems:'center', gap:8 }}>
@@ -708,6 +711,42 @@ export default function AdminPage() {
                                 </button>
                               </div>
                             </div>
+
+                            {/* Color & Font Style — only for text elements */}
+                            {STYLABLE_ELEMENTS.includes(key) && (
+                              <div style={{ display:'flex', gap:8, alignItems:'center', flexWrap:'wrap' }}>
+                                <div style={{ display:'flex', alignItems:'center', gap:4 }}>
+                                  <span style={{ fontSize:11, color:'var(--text-muted)' }}>สี:</span>
+                                  <input
+                                    type="color"
+                                    value={certLayout[key].color || '#ffffff'}
+                                    onChange={e => setCertLayout(l => ({ ...l, [key]: { ...l[key], color: e.target.value } }))}
+                                    style={{ width:28, height:22, border:'1px solid var(--border)', borderRadius:4, cursor:'pointer', padding:0 }}
+                                  />
+                                  {certLayout[key].color && (
+                                    <button
+                                      className="btn btn-xs btn-ghost"
+                                      style={{ fontSize:10, padding:'0 4px' }}
+                                      onClick={() => setCertLayout(l => ({ ...l, [key]: { ...l[key], color: undefined } }))}
+                                      title="ใช้สีเริ่มต้น"
+                                    >✕</button>
+                                  )}
+                                </div>
+                                <div style={{ display:'flex', alignItems:'center', gap:3 }}>
+                                  <span style={{ fontSize:11, color:'var(--text-muted)' }}>แบบ:</span>
+                                  {(['normal', 'italic', 'bold-italic'] as const).map(fs => (
+                                    <button
+                                      key={fs}
+                                      className={`btn btn-xs ${(certLayout[key].fontStyle || 'normal') === fs ? 'btn-primary' : 'btn-outline'}`}
+                                      style={{ padding:'1px 6px', fontSize:10, fontStyle: fs.includes('italic') ? 'italic' : 'normal', fontWeight: fs === 'bold-italic' ? 800 : 400 }}
+                                      onClick={() => setCertLayout(l => ({ ...l, [key]: { ...l[key], fontStyle: fs } }))}
+                                    >
+                                      {fs === 'normal' ? 'ปกติ' : fs === 'italic' ? 'เอียง' : 'หนา+เอียง'}
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
                           </div>
                         ))}
                       </div>
@@ -730,7 +769,7 @@ export default function AdminPage() {
       {/* ACTIVITY MODAL */}
       {showActModal && (
         <div className="modal-overlay" onClick={e => { if (e.target === e.currentTarget) setShowActModal(false); }}>
-          <div className="modal animate-slide-up">
+          <div className="modal modal-lg animate-slide-up">
             <div className="modal-header">
               <span className="modal-title">{editAct ? '✏️ แก้ไขกิจกรรม' : '+ สร้างกิจกรรมใหม่'}</span>
               <button className="modal-close" onClick={() => setShowActModal(false)}>✕</button>
@@ -752,12 +791,12 @@ export default function AdminPage() {
               <div className="form-group" style={{ marginBottom:0 }}>
                 <label className="form-label">รูปพื้นหลังเกียรติบัตร</label>
                 {actForm.background_url ? (
-                  <div className="upload-preview">
-                    <img src={actForm.background_url} alt="bg" />
+                  <div style={{ position:'relative', display:'inline-block', width:'100%' }}>
+                    <img src={actForm.background_url} alt="bg" style={{ width:'100%', maxHeight:260, objectFit:'contain', borderRadius:8, border:'1px solid var(--border)', background:'#f0f0f0' }} />
                     <button className="upload-preview-remove" onClick={()=>setActForm(f=>({...f,background_url:''}))}>✕</button>
                   </div>
                 ) : (
-                  <label className="upload-area" style={{ cursor:'pointer' }}>
+                  <label className="upload-area" style={{ cursor:'pointer', minHeight:120 }}>
                     <div className="upload-icon">{actBgUploading?'⏳':'🖼️'}</div>
                     <div className="upload-text">{actBgUploading?'กำลังอัปโหลด...':<><strong>คลิกเพื่อเลือกรูป</strong> หรือลากวางที่นี่</>}</div>
                     <input type="file" accept="image/*" onChange={handleActBgUpload} disabled={actBgUploading} />

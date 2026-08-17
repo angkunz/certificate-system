@@ -45,10 +45,11 @@ function formatDate(d: string) {
   return `${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear() + 543}`;
 }
 
-function getTransform(_el: CertElement) {
-  // Always center-anchor the element at (x%, y%).
-  // textAlign on the element itself handles left/center/right text flow.
-  return 'translate(-50%, -50%)';
+/** Compute CSS transform based on alignment anchor */
+function getTransform(el: CertElement) {
+  if (el.align === 'center') return 'translate(-50%, -50%)';
+  if (el.align === 'right')  return 'translate(-100%, -50%)';
+  return 'translate(0, -50%)'; // left: left edge at x%
 }
 
 export default function CertificateTemplate({
@@ -106,8 +107,17 @@ export default function CertificateTemplate({
 
   const hidden = (key: keyof CertLayout) => !layout[key].visible ? { display: 'none' } : {};
   const sz = (key: keyof CertLayout) => (layout[key]?.size ?? 100) / 100;
-  // Map 'align' -> CSS textAlign (left/center/right already match)
-  const ta = (key: keyof CertLayout): React.CSSProperties['textAlign'] => layout[key].align;
+
+  /** Build color + fontStyle CSS overrides for a text element */
+  const textStyle = (key: keyof CertLayout, defaultColor: string): React.CSSProperties => {
+    const e = layout[key];
+    const fs = e.fontStyle || 'normal';
+    return {
+      color: e.color || defaultColor,
+      fontStyle: (fs === 'italic' || fs === 'bold-italic') ? 'italic' : 'normal',
+      fontWeight: fs === 'bold-italic' ? 800 : undefined,
+    };
+  };
 
   return (
     <div
@@ -128,48 +138,48 @@ export default function CertificateTemplate({
         onMouseDown={startDrag('logo')} onTouchStart={startDrag('logo')}>
         {org.logo_url
           ? <img src={org.logo_url} alt="logo" crossOrigin="anonymous"
-              style={{ width: `calc(clamp(32px,5vw,60px) * ${sz('logo')})`, height: `calc(clamp(32px,5vw,60px) * ${sz('logo')})`, borderRadius: 8, objectFit: 'cover', border: '2px solid rgba(255,255,255,0.4)', display: 'block' }} />
+              style={{ width: `calc(clamp(32px,5vw,60px) * ${sz('logo')})`, height: `calc(clamp(32px,5vw,60px) * ${sz('logo')})`, borderRadius: 8, objectFit: 'contain', border: '2px solid rgba(255,255,255,0.4)', display: 'block', background: 'rgba(255,255,255,0.1)' }} />
           : <div style={{ width: `calc(clamp(32px,5vw,60px) * ${sz('logo')})`, height: `calc(clamp(32px,5vw,60px) * ${sz('logo')})`, borderRadius: 8, background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: `calc(clamp(16px,2.5vw,28px) * ${sz('logo')})`, color: 'white' }}>🏛️</div>
         }
       </div>
 
       {/* ── Org Name ── */}
-      <div style={{ ...el('orgName'), ...hidden('orgName'), color: 'rgba(255,255,255,0.95)', fontWeight: 700, fontSize: `calc(clamp(10px,1.4vw,18px) * ${sz('orgName')})`, maxWidth: '40%', lineHeight: 1.3, textAlign: ta('orgName') }}
+      <div style={{ ...el('orgName'), ...hidden('orgName'), ...textStyle('orgName', 'rgba(255,255,255,0.95)'), fontWeight: textStyle('orgName', '').fontWeight ?? 700, fontSize: `calc(clamp(10px,1.4vw,18px) * ${sz('orgName')})`, maxWidth: '40%', lineHeight: 1.3 }}
         onMouseDown={startDrag('orgName')} onTouchStart={startDrag('orgName')}>
         {org.name}
       </div>
 
       {/* ── Title ── */}
-      <div style={{ ...el('title'), ...hidden('title'), fontFamily: "'Playfair Display','Sarabun',serif", fontSize: `calc(clamp(20px,3.5vw,48px) * ${sz('title')})`, fontWeight: 700, color: '#fcd34d', letterSpacing: '0.08em', textShadow: '0 2px 8px rgba(0,0,0,0.4)', whiteSpace: 'nowrap', textAlign: ta('title') }}
+      <div style={{ ...el('title'), ...hidden('title'), fontFamily: "'Playfair Display','Sarabun',serif", fontSize: `calc(clamp(20px,3.5vw,48px) * ${sz('title')})`, fontWeight: textStyle('title', '').fontWeight ?? 700, letterSpacing: '0.08em', textShadow: '0 2px 8px rgba(0,0,0,0.4)', whiteSpace: 'nowrap', ...textStyle('title', '#fcd34d') }}
         onMouseDown={startDrag('title')} onTouchStart={startDrag('title')}>
         เกียรติบัตร
       </div>
 
       {/* ── Present Text ── */}
-      <div style={{ ...el('presentText'), ...hidden('presentText'), color: 'rgba(255,255,255,0.8)', fontSize: `calc(clamp(11px,1.2vw,16px) * ${sz('presentText')})`, whiteSpace: 'nowrap', textAlign: ta('presentText') }}
+      <div style={{ ...el('presentText'), ...hidden('presentText'), fontSize: `calc(clamp(11px,1.2vw,16px) * ${sz('presentText')})`, whiteSpace: 'nowrap', ...textStyle('presentText', 'rgba(255,255,255,0.8)') }}
         onMouseDown={startDrag('presentText')} onTouchStart={startDrag('presentText')}>
         มอบเกียรติบัตรฉบับนี้ให้แก่
       </div>
 
       {/* ── Recipient ── */}
-      <div style={{ ...el('recipient'), ...hidden('recipient'), fontFamily: "'Playfair Display','Sarabun',serif", fontSize: `calc(clamp(16px,2.8vw,36px) * ${sz('recipient')})`, fontWeight: 700, color: 'white', textShadow: '0 2px 8px rgba(0,0,0,0.4)', whiteSpace: 'nowrap', maxWidth: '80%', overflow: 'hidden', textOverflow: 'ellipsis', textAlign: ta('recipient') }}
+      <div style={{ ...el('recipient'), ...hidden('recipient'), fontFamily: "'Playfair Display','Sarabun',serif", fontSize: `calc(clamp(16px,2.8vw,36px) * ${sz('recipient')})`, fontWeight: textStyle('recipient', '').fontWeight ?? 700, textShadow: '0 2px 8px rgba(0,0,0,0.4)', whiteSpace: 'nowrap', maxWidth: '80%', overflow: 'hidden', textOverflow: 'ellipsis', ...textStyle('recipient', 'white') }}
         onMouseDown={startDrag('recipient')} onTouchStart={startDrag('recipient')}>
         {recipient.full_name}
       </div>
 
       {/* ── Divider ── */}
-      <div style={{ ...el('divider'), ...hidden('divider'), width: `calc(clamp(50px,8vw,100px) * ${sz('divider')})`, height: 2, background: 'linear-gradient(90deg,transparent,#fcd34d,transparent)' }}
+      <div style={{ ...el('divider'), ...hidden('divider'), width: `calc(clamp(50px,8vw,100px) * ${sz('divider')})`, height: 2, background: layout.divider.color ? `linear-gradient(90deg,transparent,${layout.divider.color},transparent)` : 'linear-gradient(90deg,transparent,#fcd34d,transparent)' }}
         onMouseDown={startDrag('divider')} onTouchStart={startDrag('divider')} />
 
       {/* ── Activity ── */}
-      <div style={{ ...el('activity'), ...hidden('activity'), fontSize: `calc(clamp(12px,1.6vw,20px) * ${sz('activity')})`, fontWeight: 700, color: '#fcd34d', whiteSpace: 'nowrap', maxWidth: '80%', overflow: 'hidden', textOverflow: 'ellipsis', textAlign: ta('activity') }}
+      <div style={{ ...el('activity'), ...hidden('activity'), fontSize: `calc(clamp(12px,1.6vw,20px) * ${sz('activity')})`, fontWeight: textStyle('activity', '').fontWeight ?? 700, whiteSpace: 'nowrap', maxWidth: '80%', overflow: 'hidden', textOverflow: 'ellipsis', ...textStyle('activity', '#fcd34d') }}
         onMouseDown={startDrag('activity')} onTouchStart={startDrag('activity')}>
         {recipient.activity?.name}
       </div>
 
       {/* ── Description ── */}
       {(recipient.extra_details || recipient.activity?.description) && (
-        <div style={{ ...el('description'), ...hidden('description'), fontSize: `calc(clamp(10px,1.1vw,14px) * ${sz('description')})`, color: 'rgba(255,255,255,0.75)', maxWidth: '70%', lineHeight: 1.5, textAlign: ta('description') }}
+        <div style={{ ...el('description'), ...hidden('description'), fontSize: `calc(clamp(10px,1.1vw,14px) * ${sz('description')})`, maxWidth: '70%', lineHeight: 1.5, ...textStyle('description', 'rgba(255,255,255,0.75)') }}
           onMouseDown={startDrag('description')} onTouchStart={startDrag('description')}>
           {recipient.extra_details || recipient.activity?.description}
         </div>
@@ -177,7 +187,7 @@ export default function CertificateTemplate({
 
       {/* ── Date ── */}
       {certDate && (
-        <div style={{ ...el('date'), ...hidden('date'), fontSize: `calc(clamp(10px,1.1vw,14px) * ${sz('date')})`, color: 'rgba(255,255,255,0.75)', whiteSpace: 'nowrap', textAlign: ta('date') }}
+        <div style={{ ...el('date'), ...hidden('date'), fontSize: `calc(clamp(10px,1.1vw,14px) * ${sz('date')})`, whiteSpace: 'nowrap', ...textStyle('date', 'rgba(255,255,255,0.75)') }}
           onMouseDown={startDrag('date')} onTouchStart={startDrag('date')}>
           วันที่ {formatDate(certDate)}
         </div>
@@ -191,10 +201,10 @@ export default function CertificateTemplate({
             style={{ height: `calc(clamp(28px,4vw,50px) * ${sz('signature')})`, objectFit: 'contain', filter: 'brightness(0) invert(1)', marginBottom: 2 }} />
         )}
         <div style={{ width: `calc(clamp(70px,10vw,130px) * ${sz('signature')})`, height: 1, background: 'rgba(255,255,255,0.5)' }} />
-        <div style={{ fontSize: `calc(clamp(10px,1.1vw,14px) * ${sz('signature')})`, fontWeight: 700, color: 'white', whiteSpace: 'nowrap', marginTop: 2 }}>
+        <div style={{ fontSize: `calc(clamp(10px,1.1vw,14px) * ${sz('signature')})`, fontWeight: 700, whiteSpace: 'nowrap', marginTop: 2, ...textStyle('signature', 'white') }}>
           {org.executive_name}
         </div>
-        <div style={{ fontSize: `calc(clamp(9px,0.9vw,12px) * ${sz('signature')})`, color: 'rgba(255,255,255,0.7)', whiteSpace: 'nowrap' }}>
+        <div style={{ fontSize: `calc(clamp(9px,0.9vw,12px) * ${sz('signature')})`, whiteSpace: 'nowrap', color: layout.signature.color || 'rgba(255,255,255,0.7)' }}>
           {org.executive_position}
         </div>
       </div>
@@ -217,7 +227,7 @@ export default function CertificateTemplate({
 
       {/* Edit mode hint */}
       {editMode && (
-        <div style={{ position: 'absolute', bottom: '2%', left: '50%', transform: 'translateX(-50%)', background: 'rgba(0,0,0,0.75)', color: 'white', fontSize: 'clamp(8px,1.2%,11px)', padding: '3px 12px', borderRadius: 20, whiteSpace: 'nowrap', pointerEvents: 'none', zIndex: 20 }}>
+        <div style={{ position: 'absolute', bottom: '2%', left: '50%', transform: 'translateX(-50%)', background: 'rgba(0,0,0,0.75)', color: 'white', fontSize: 'clamp(8px,0.9vw,11px)', padding: '3px 12px', borderRadius: 20, whiteSpace: 'nowrap', pointerEvents: 'none', zIndex: 20 }}>
           🖱️ ลากองค์ประกอบเพื่อย้ายตำแหน่ง
         </div>
       )}
