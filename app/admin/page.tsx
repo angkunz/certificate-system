@@ -601,18 +601,18 @@ export default function AdminPage() {
                   <div className="card-body">
                     <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:20, flexWrap:'wrap', gap:12 }}>
                       <div>
-                        <h3 style={{ fontSize:16, fontWeight:700, marginBottom:4 }}>🎨 ปรับแต่ง Layout เกียรติบัตร</h3>
-                        <p style={{ fontSize:13, color:'var(--text-muted)' }}>ลากองค์ประกอบในเกียรติบัตรเพื่อปรับตำแหน่ง</p>
+                        <h3 style={{ fontSize:16, fontWeight:700, marginBottom:4 }}>🎨 ปรับแต่ง Layout & ขนาดเกียรติบัตร</h3>
+                        <p style={{ fontSize:13, color:'var(--text-muted)' }}>ลากองค์ประกอบเพื่อเปลี่ยนตำแหน่ง หรือปรับขนาดและแนวการจัดวางได้ตามต้องการ</p>
                       </div>
                       <div style={{ display:'flex', gap:8 }}>
-                        <button className="btn btn-outline btn-sm" onClick={() => { setCertLayout(DEFAULT_CERT_LAYOUT); }}>↩️ รีเซ็ต</button>
+                        <button className="btn btn-outline btn-sm" onClick={() => { setCertLayout(DEFAULT_CERT_LAYOUT); }}>↩️ รีเซ็ตเป็นค่าเริ่มต้น</button>
                         <button className={`btn btn-sm ${layoutEditMode ? 'btn-secondary' : 'btn-primary'}`} onClick={() => setLayoutEditMode(v => !v)}>
-                          {layoutEditMode ? '✓ โหมดแก้ไข ON' : '✏️ เปิดโหมดแก้ไข'}
+                          {layoutEditMode ? '✓ โหมดแก้ไข ON' : '✏️ เปิดโหมดแก้ไขตำแหน่ง'}
                         </button>
                       </div>
                     </div>
 
-                    {/* Visibility toggles */}
+                    {/* Quick Visibility Toggles */}
                     <div style={{ display:'flex', flexWrap:'wrap', gap:8, marginBottom:16 }}>
                       {(Object.keys(ELEMENT_LABELS) as (keyof CertLayout)[]).map(key => (
                         <button key={key}
@@ -643,14 +643,80 @@ export default function AdminPage() {
 
                     {layoutEditMode && (
                       <div className="alert alert-info" style={{ marginBottom:16 }}>
-                        💡 <strong>โหมดแก้ไข:</strong> ลากองค์ประกอบที่มีกรอบประ เพื่อย้ายตำแหน่ง
+                        💡 <strong>โหมดแก้ไขตำแหน่ง:</strong> ลากองค์ประกอบที่มีกรอบประบนตัวอย่างด้านบนเพื่อปรับย้ายตำแหน่ง (X/Y)
                       </div>
                     )}
 
-                    <div style={{ display:'flex', justifyContent:'flex-end', gap:8 }}>
+                    {/* 📐 Element Size & Alignment Controls Panel */}
+                    <div style={{ marginTop:24, padding:16, background:'var(--bg)', borderRadius:12, border:'1px solid var(--border)' }}>
+                      <h4 style={{ fontSize:14, fontWeight:700, marginBottom:12, display:'flex', alignItems:'center', gap:8 }}>
+                        📐 ปรับขนาดและแนวจัดวาง (Size & Alignment)
+                      </h4>
+                      <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(260px, 1fr))', gap:12 }}>
+                        {(Object.keys(ELEMENT_LABELS) as (keyof CertLayout)[]).map(key => (
+                          <div key={key} style={{ padding:12, background:'var(--card-bg, #ffffff)', borderRadius:8, border:'1px solid var(--border)', display:'flex', flexDirection:'column', gap:8 }}>
+                            <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+                              <span style={{ fontWeight:600, fontSize:13 }}>{ELEMENT_LABELS[key]}</span>
+                              <button
+                                className={`badge ${certLayout[key].visible ? 'badge-success' : 'badge-gray'}`}
+                                style={{ cursor:'pointer', padding:'2px 8px', fontSize:11 }}
+                                onClick={() => setCertLayout(l => ({ ...l, [key]: { ...l[key], visible: !l[key].visible } }))}
+                              >
+                                {certLayout[key].visible ? '👁️ แสดง' : '🚫 ซ่อน'}
+                              </button>
+                            </div>
+
+                            {/* Alignment */}
+                            <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+                              <span style={{ fontSize:12, color:'var(--text-muted)' }}>จัดตำแหน่ง:</span>
+                              <div style={{ display:'flex', gap:3 }}>
+                                {(['left', 'center', 'right'] as const).map(align => (
+                                  <button
+                                    key={align}
+                                    className={`btn btn-xs ${certLayout[key].align === align ? 'btn-primary' : 'btn-outline'}`}
+                                    style={{ padding:'2px 6px', fontSize:10 }}
+                                    onClick={() => setCertLayout(l => ({ ...l, [key]: { ...l[key], align } }))}
+                                  >
+                                    {align === 'left' ? 'ชิดซ้าย' : align === 'center' ? 'กลาง' : 'ชิดขวา'}
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+
+                            {/* Size Slider */}
+                            <div style={{ display:'flex', flexDirection:'column', gap:4 }}>
+                              <div style={{ display:'flex', justifyContent:'space-between', fontSize:12 }}>
+                                <span style={{ color:'var(--text-muted)' }}>ขนาด (Size):</span>
+                                <span style={{ fontWeight:700, color:'var(--primary)' }}>{certLayout[key].size ?? 100}%</span>
+                              </div>
+                              <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+                                <input
+                                  type="range"
+                                  min="50"
+                                  max="200"
+                                  step="5"
+                                  value={certLayout[key].size ?? 100}
+                                  onChange={e => setCertLayout(l => ({ ...l, [key]: { ...l[key], size: Number(e.target.value) } }))}
+                                  style={{ flex:1, cursor:'pointer' }}
+                                />
+                                <button
+                                  className="btn btn-xs btn-outline"
+                                  style={{ fontSize:10, padding:'1px 5px' }}
+                                  onClick={() => setCertLayout(l => ({ ...l, [key]: { ...l[key], size: 100 } }))}
+                                >
+                                  100%
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div style={{ display:'flex', justifyContent:'flex-end', gap:8, marginTop:20 }}>
                       <button className="btn btn-outline" onClick={() => { setCertLayout(mergeLayout(org?.cert_layout)); setLayoutEditMode(false); }}>ยกเลิก</button>
                       <button className="btn btn-primary" onClick={saveLayout} disabled={layoutSaving}>
-                        {layoutSaving ? '⏳ กำลังบันทึก...' : '💾 บันทึก Layout'}
+                        {layoutSaving ? '⏳ กำลังบันทึก...' : '💾 บันทึก Layout & ขนาด'}
                       </button>
                     </div>
                   </div>

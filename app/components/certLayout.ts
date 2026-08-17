@@ -5,6 +5,7 @@ export interface CertElement {
   y: number;       // 0–100 (% from top of container)
   align: 'left' | 'center' | 'right';
   visible: boolean;
+  size?: number;   // 50–200 (% scale, default 100)
 }
 
 export interface CertLayout {
@@ -36,24 +37,30 @@ export const ELEMENT_LABELS: Record<keyof CertLayout, string> = {
 };
 
 export const DEFAULT_CERT_LAYOUT: CertLayout = {
-  logo:        { x: 6,  y: 7,  align: 'left',   visible: true },
-  orgName:     { x: 16, y: 9,  align: 'left',   visible: true },
-  title:       { x: 50, y: 23, align: 'center', visible: true },
-  presentText: { x: 50, y: 38, align: 'center', visible: true },
-  recipient:   { x: 50, y: 45, align: 'center', visible: true },
-  divider:     { x: 50, y: 57, align: 'center', visible: true },
-  activity:    { x: 50, y: 62, align: 'center', visible: true },
-  description: { x: 50, y: 70, align: 'center', visible: true },
-  date:        { x: 50, y: 78, align: 'center', visible: true },
-  signature:   { x: 14, y: 83, align: 'center', visible: true },
-  qr:          { x: 87, y: 81, align: 'center', visible: true },
+  logo:        { x: 6,  y: 7,  align: 'left',   visible: true, size: 100 },
+  orgName:     { x: 16, y: 9,  align: 'left',   visible: true, size: 100 },
+  title:       { x: 50, y: 23, align: 'center', visible: true, size: 100 },
+  presentText: { x: 50, y: 38, align: 'center', visible: true, size: 100 },
+  recipient:   { x: 50, y: 45, align: 'center', visible: true, size: 100 },
+  divider:     { x: 50, y: 57, align: 'center', visible: true, size: 100 },
+  activity:    { x: 50, y: 62, align: 'center', visible: true, size: 100 },
+  description: { x: 50, y: 70, align: 'center', visible: true, size: 100 },
+  date:        { x: 50, y: 78, align: 'center', visible: true, size: 100 },
+  signature:   { x: 14, y: 83, align: 'center', visible: true, size: 100 },
+  qr:          { x: 87, y: 81, align: 'center', visible: true, size: 100 },
 };
 
 export function mergeLayout(saved: Partial<CertLayout> | null | undefined): CertLayout {
   if (!saved) return { ...DEFAULT_CERT_LAYOUT };
   const result = { ...DEFAULT_CERT_LAYOUT };
   for (const key of Object.keys(DEFAULT_CERT_LAYOUT) as (keyof CertLayout)[]) {
-    if (saved[key]) result[key] = { ...DEFAULT_CERT_LAYOUT[key], ...saved[key] };
+    if (saved[key]) {
+      result[key] = {
+        ...DEFAULT_CERT_LAYOUT[key],
+        ...saved[key],
+        size: saved[key].size ?? 100,
+      };
+    }
   }
   return result;
 }
