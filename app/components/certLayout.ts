@@ -22,6 +22,7 @@ export interface CertLayout {
   description: CertElement;
   date: CertElement;
   signature: CertElement;
+  executive: CertElement;
   qr: CertElement;
 }
 
@@ -36,13 +37,14 @@ export const ELEMENT_LABELS: Record<keyof CertLayout, string> = {
   activity:    '🎯 ชื่อกิจกรรม',
   description: '📋 รายละเอียด',
   date:        '📅 วันที่',
-  signature:   '✍️ ลายเซ็น',
+  signature:   '✍️ รูปภาพลายเซ็น',
+  executive:   '👔 ชื่อ/ตำแหน่งผู้บริหาร',
   qr:          '🔗 QR Code',
 };
 
 // Elements that support color/font customization (exclude logo, divider, qr)
 export const STYLABLE_ELEMENTS: (keyof CertLayout)[] = [
-  'orgName', 'title', 'presentText', 'recipient', 'award', 'activity', 'description', 'date', 'signature',
+  'orgName', 'title', 'presentText', 'recipient', 'award', 'activity', 'description', 'date', 'signature', 'executive'
 ];
 
 export const DEFAULT_CERT_LAYOUT: CertLayout = {
@@ -56,7 +58,8 @@ export const DEFAULT_CERT_LAYOUT: CertLayout = {
   activity:    { x: 50, y: 62, align: 'center', visible: true, size: 100 },
   description: { x: 50, y: 70, align: 'center', visible: true, size: 100 },
   date:        { x: 50, y: 78, align: 'center', visible: true, size: 100 },
-  signature:   { x: 14, y: 83, align: 'center', visible: true, size: 100 },
+  signature:   { x: 50, y: 84, align: 'center', visible: true, size: 100 },
+  executive:   { x: 50, y: 92, align: 'center', visible: true, size: 100 },
   qr:          { x: 87, y: 81, align: 'center', visible: true, size: 100 },
 };
 

@@ -192,17 +192,20 @@ export default function CertificateTemplate({
           </div>
         )}
 
-        <div style={{ ...el('signature'), ...hidden('signature'), display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}
+        <div style={{ ...el('signature'), ...hidden('signature'), display: 'flex', flexDirection: 'column', alignItems: 'center' }}
           onMouseDown={startDrag('signature')} onTouchStart={startDrag('signature')}>
           {org.signature_url && (
             <img src={org.signature_url} alt="sig" crossOrigin="anonymous"
-              style={{ height: `calc(68px * ${sz('signature')})`, objectFit: 'contain', marginBottom: 2 }} />
+              style={{ height: `calc(68px * ${sz('signature')})`, objectFit: 'contain' }} />
           )}
-          <div style={{ width: `calc(168px * ${sz('signature')})`, height: 2, background: layout.signature.color || '#cbd5e1' }} />
-          <div style={{ fontSize: `calc(20px * ${sz('signature')})`, fontWeight: 700, whiteSpace: 'nowrap', marginTop: 4, ...textStyle('signature', '#0f172a') }}>
+        </div>
+
+        <div style={{ ...el('executive'), ...hidden('executive'), display: 'flex', flexDirection: 'column', alignItems: 'center' }}
+          onMouseDown={startDrag('executive')} onTouchStart={startDrag('executive')}>
+          <div style={{ fontSize: `calc(20px * ${sz('executive')})`, fontWeight: 700, whiteSpace: 'nowrap', ...textStyle('executive', '#0f172a') }}>
             {org.executive_name}
           </div>
-          <div style={{ fontSize: `calc(18px * ${sz('signature')})`, whiteSpace: 'nowrap', color: layout.signature.color || '#475569' }}>
+          <div style={{ fontSize: `calc(18px * ${sz('executive')})`, whiteSpace: 'nowrap', color: layout.executive?.color || '#475569' }}>
             {org.executive_position}
           </div>
         </div>
