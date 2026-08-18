@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
       .from('recipients')
       .select('*, activity:activities(id, name, description, cert_date, background_url)')
       .ilike('full_name', `%${q}%`)
-      .neq('status', 'rejected');
+      .eq('status', 'approved');
     if (error) return NextResponse.json({ error }, { status: 500 });
     return NextResponse.json({ data });
   }
@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
       .from('recipients')
       .select('*, activity:activities(id, name, description, cert_date, background_url)')
       .eq('cert_code', code)
-      .neq('status', 'rejected')
+      .eq('status', 'approved')
       .single();
     if (error) return NextResponse.json({ error: 'ไม่พบเกียรติบัตร' }, { status: 404 });
     return NextResponse.json({ data });
