@@ -196,7 +196,7 @@ export default function CertificateTemplate({
           onMouseDown={startDrag('signature')} onTouchStart={startDrag('signature')}>
           {org.signature_url && (
             <img src={org.signature_url} alt="sig" crossOrigin="anonymous"
-              style={{ height: `calc(68px * ${sz('signature')})`, objectFit: 'contain', filter: 'brightness(0) invert(1)', marginBottom: 2 }} />
+              style={{ height: `calc(68px * ${sz('signature')})`, objectFit: 'contain', marginBottom: 2 }} />
           )}
           <div style={{ width: `calc(168px * ${sz('signature')})`, height: 2, background: 'rgba(255,255,255,0.5)' }} />
           <div style={{ fontSize: `calc(20px * ${sz('signature')})`, fontWeight: 700, whiteSpace: 'nowrap', marginTop: 4, ...textStyle('signature', 'white') }}>
