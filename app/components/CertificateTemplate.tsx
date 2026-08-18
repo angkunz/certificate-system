@@ -143,50 +143,50 @@ export default function CertificateTemplate({
           }
         </div>
 
-        <div style={{ ...el('orgName'), ...hidden('orgName'), ...textStyle('orgName', 'rgba(255,255,255,0.95)'), fontWeight: textStyle('orgName', '').fontWeight ?? 700, fontSize: `calc(26px * ${sz('orgName')})`, maxWidth: 500, lineHeight: 1.3 }}
+        <div style={{ ...el('orgName'), ...hidden('orgName'), ...textStyle('orgName', '#1e293b'), fontWeight: textStyle('orgName', '').fontWeight ?? 700, fontSize: `calc(26px * ${sz('orgName')})`, maxWidth: 500, lineHeight: 1.3 }}
           onMouseDown={startDrag('orgName')} onTouchStart={startDrag('orgName')}>
           {org.name}
         </div>
 
-        <div style={{ ...el('title'), ...hidden('title'), fontFamily: "'Playfair Display','Sarabun',serif", fontSize: `calc(64px * ${sz('title')})`, fontWeight: textStyle('title', '').fontWeight ?? 700, letterSpacing: '0.08em', textShadow: '0 2px 8px rgba(0,0,0,0.4)', whiteSpace: 'nowrap', ...textStyle('title', '#fcd34d') }}
+        <div style={{ ...el('title'), ...hidden('title'), fontFamily: "'Playfair Display','Sarabun',serif", fontSize: `calc(64px * ${sz('title')})`, fontWeight: textStyle('title', '').fontWeight ?? 700, letterSpacing: '0.08em', textShadow: '0 2px 8px rgba(0,0,0,0.1)', whiteSpace: 'nowrap', ...textStyle('title', '#b45309') }}
           onMouseDown={startDrag('title')} onTouchStart={startDrag('title')}>
           เกียรติบัตร
         </div>
 
-        <div style={{ ...el('presentText'), ...hidden('presentText'), fontSize: `calc(22px * ${sz('presentText')})`, whiteSpace: 'nowrap', ...textStyle('presentText', 'rgba(255,255,255,0.8)') }}
+        <div style={{ ...el('presentText'), ...hidden('presentText'), fontSize: `calc(22px * ${sz('presentText')})`, whiteSpace: 'nowrap', ...textStyle('presentText', '#334155') }}
           onMouseDown={startDrag('presentText')} onTouchStart={startDrag('presentText')}>
           มอบเกียรติบัตรฉบับนี้ให้แก่
         </div>
 
-        <div style={{ ...el('recipient'), ...hidden('recipient'), fontFamily: "'Playfair Display','Sarabun',serif", fontSize: `calc(48px * ${sz('recipient')})`, fontWeight: textStyle('recipient', '').fontWeight ?? 700, textShadow: '0 2px 8px rgba(0,0,0,0.4)', whiteSpace: 'nowrap', maxWidth: 750, overflow: 'hidden', textOverflow: 'ellipsis', ...textStyle('recipient', 'white') }}
+        <div style={{ ...el('recipient'), ...hidden('recipient'), fontFamily: "'Playfair Display','Sarabun',serif", fontSize: `calc(48px * ${sz('recipient')})`, fontWeight: textStyle('recipient', '').fontWeight ?? 700, textShadow: '0 2px 8px rgba(0,0,0,0.1)', whiteSpace: 'nowrap', maxWidth: 750, overflow: 'hidden', textOverflow: 'ellipsis', ...textStyle('recipient', '#0f172a') }}
           onMouseDown={startDrag('recipient')} onTouchStart={startDrag('recipient')}>
           {recipient.full_name}
         </div>
 
         {recipient.award && (
-          <div style={{ ...el('award'), ...hidden('award'), fontSize: `calc(24px * ${sz('award')})`, fontWeight: textStyle('award', '').fontWeight ?? 600, whiteSpace: 'nowrap', maxWidth: 650, overflow: 'hidden', textOverflow: 'ellipsis', ...textStyle('award', '#fcd34d') }}
+          <div style={{ ...el('award'), ...hidden('award'), fontSize: `calc(24px * ${sz('award')})`, fontWeight: textStyle('award', '').fontWeight ?? 600, whiteSpace: 'nowrap', maxWidth: 650, overflow: 'hidden', textOverflow: 'ellipsis', ...textStyle('award', '#b45309') }}
             onMouseDown={startDrag('award')} onTouchStart={startDrag('award')}>
             {recipient.award}
           </div>
         )}
 
-        <div style={{ ...el('divider'), ...hidden('divider'), width: `calc(136px * ${sz('divider')})`, height: 3, background: layout.divider.color ? `linear-gradient(90deg,transparent,${layout.divider.color},transparent)` : 'linear-gradient(90deg,transparent,#fcd34d,transparent)' }}
+        <div style={{ ...el('divider'), ...hidden('divider'), width: `calc(136px * ${sz('divider')})`, height: 3, background: layout.divider.color ? `linear-gradient(90deg,transparent,${layout.divider.color},transparent)` : 'linear-gradient(90deg,transparent,#d97706,transparent)' }}
           onMouseDown={startDrag('divider')} onTouchStart={startDrag('divider')} />
 
-        <div style={{ ...el('activity'), ...hidden('activity'), fontSize: `calc(28px * ${sz('activity')})`, fontWeight: textStyle('activity', '').fontWeight ?? 700, whiteSpace: 'nowrap', maxWidth: 750, overflow: 'hidden', textOverflow: 'ellipsis', ...textStyle('activity', '#fcd34d') }}
+        <div style={{ ...el('activity'), ...hidden('activity'), fontSize: `calc(28px * ${sz('activity')})`, fontWeight: textStyle('activity', '').fontWeight ?? 700, whiteSpace: 'nowrap', maxWidth: 750, overflow: 'hidden', textOverflow: 'ellipsis', ...textStyle('activity', '#b45309') }}
           onMouseDown={startDrag('activity')} onTouchStart={startDrag('activity')}>
           {recipient.activity?.name}
         </div>
 
         {(recipient.extra_details || recipient.activity?.description) && (
-          <div style={{ ...el('description'), ...hidden('description'), fontSize: `calc(20px * ${sz('description')})`, maxWidth: 650, lineHeight: 1.5, ...textStyle('description', 'rgba(255,255,255,0.75)') }}
+          <div style={{ ...el('description'), ...hidden('description'), fontSize: `calc(20px * ${sz('description')})`, maxWidth: 650, lineHeight: 1.5, ...textStyle('description', '#475569') }}
             onMouseDown={startDrag('description')} onTouchStart={startDrag('description')}>
             {recipient.extra_details || recipient.activity?.description}
           </div>
         )}
 
         {certDate && (
-          <div style={{ ...el('date'), ...hidden('date'), fontSize: `calc(20px * ${sz('date')})`, whiteSpace: 'nowrap', ...textStyle('date', 'rgba(255,255,255,0.75)') }}
+          <div style={{ ...el('date'), ...hidden('date'), fontSize: `calc(20px * ${sz('date')})`, whiteSpace: 'nowrap', ...textStyle('date', '#475569') }}
             onMouseDown={startDrag('date')} onTouchStart={startDrag('date')}>
             วันที่ {formatDate(certDate)}
           </div>
@@ -198,11 +198,11 @@ export default function CertificateTemplate({
             <img src={org.signature_url} alt="sig" crossOrigin="anonymous"
               style={{ height: `calc(68px * ${sz('signature')})`, objectFit: 'contain', marginBottom: 2 }} />
           )}
-          <div style={{ width: `calc(168px * ${sz('signature')})`, height: 2, background: 'rgba(255,255,255,0.5)' }} />
-          <div style={{ fontSize: `calc(20px * ${sz('signature')})`, fontWeight: 700, whiteSpace: 'nowrap', marginTop: 4, ...textStyle('signature', 'white') }}>
+          <div style={{ width: `calc(168px * ${sz('signature')})`, height: 2, background: layout.signature.color || '#cbd5e1' }} />
+          <div style={{ fontSize: `calc(20px * ${sz('signature')})`, fontWeight: 700, whiteSpace: 'nowrap', marginTop: 4, ...textStyle('signature', '#0f172a') }}>
             {org.executive_name}
           </div>
-          <div style={{ fontSize: `calc(18px * ${sz('signature')})`, whiteSpace: 'nowrap', color: layout.signature.color || 'rgba(255,255,255,0.7)' }}>
+          <div style={{ fontSize: `calc(18px * ${sz('signature')})`, whiteSpace: 'nowrap', color: layout.signature.color || '#475569' }}>
             {org.executive_position}
           </div>
         </div>
@@ -210,13 +210,13 @@ export default function CertificateTemplate({
         {qrDataUrl && (
           <div style={{ ...el('qr'), ...hidden('qr'), display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}
             onMouseDown={startDrag('qr')} onTouchStart={startDrag('qr')}>
-            <div style={{ fontSize: `calc(16px * ${sz('qr')})`, color: 'rgba(255,255,255,0.6)', whiteSpace: 'nowrap' }}>
+            <div style={{ fontSize: `calc(16px * ${sz('qr')})`, color: layout.qr.color || '#64748b', whiteSpace: 'nowrap' }}>
               ตรวจสอบเกียรติบัตร
             </div>
-            <div style={{ background: 'white', borderRadius: 8, padding: 6, width: `calc(100px * ${sz('qr')})`, height: `calc(100px * ${sz('qr')})`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ background: 'white', borderRadius: 8, padding: 6, width: `calc(100px * ${sz('qr')})`, height: `calc(100px * ${sz('qr')})`, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #e2e8f0' }}>
               <img src={qrDataUrl} alt="qr" style={{ width: '100%', height: '100%' }} />
             </div>
-            <div style={{ fontSize: `calc(12px * ${sz('qr')})`, color: 'rgba(255,255,255,0.5)', fontFamily: 'monospace', maxWidth: `calc(100px * ${sz('qr')})`, wordBreak: 'break-all', textAlign: 'center' }}>
+            <div style={{ fontSize: `calc(12px * ${sz('qr')})`, color: layout.qr.color || '#94a3b8', fontFamily: 'monospace', maxWidth: `calc(100px * ${sz('qr')})`, wordBreak: 'break-all', textAlign: 'center' }}>
               {recipient.cert_code}
             </div>
           </div>
