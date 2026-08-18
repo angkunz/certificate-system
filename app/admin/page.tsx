@@ -58,6 +58,12 @@ export default function AdminPage() {
   // Settings
   const [orgForm, setOrgForm] = useState<OrgSettings>({ name: '', logo_url: null, executive_name: '', executive_position: '', signature_url: null, theme_color: '#1e3a8a' });
   const [orgSaving, setOrgSaving] = useState(false);
+
+  // Password
+  const [showPwdModal, setShowPwdModal] = useState(false);
+  const [pwdForm, setPwdForm] = useState({ oldPassword: '', newPassword: '', confirmPassword: '' });
+  const [pwdSaving, setPwdSaving] = useState(false);
+  const [pwdError, setPwdError] = useState('');
   const [logoUploading, setLogoUploading] = useState(false);
   const [sigUploading, setSigUploading] = useState(false);
 
@@ -129,6 +135,26 @@ export default function AdminPage() {
   async function handleLogout() {
     await fetch('/api/auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'logout' }) });
     setUser(null); setActivities([]); setRecipients([]);
+  }
+
+  async function handlePwdChange(e: React.FormEvent) {
+    e.preventDefault();
+    setPwdError('');
+    if (pwdForm.newPassword !== pwdForm.confirmPassword) {
+      setPwdError('รหัสผ่านใหม่ไม่ตรงกัน'); return;
+    }
+    if (pwdForm.newPassword.length < 6) {
+      setPwdError('รหัสผ่านใหม่ต้องมีอย่างน้อย 6 ตัวอักษร'); return;
+    }
+    setPwdSaving(true);
+    try {
+      const res = await fetch('/api/auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'change_password', oldPassword: pwdForm.oldPassword, newPassword: pwdForm.newPassword }) });
+      const data = await res.json();
+      if (!res.ok) { setPwdError(data.error); return; }
+      setShowPwdModal(false);
+      setPwdForm({ oldPassword: '', newPassword: '', confirmPassword: '' });
+      setToasts(p => [...p, { id: Date.now(), msg: 'เปลี่ยนรหัสผ่านสำเร็จ', type: 'success' }]);
+    } finally { setPwdSaving(false); }
   }
 
   async function uploadFile(file: File, bucket: string): Promise<string | null> {
@@ -354,6 +380,9 @@ export default function AdminPage() {
                 <div className="sidebar-user-role">ผู้ดูแลระบบ</div>
               </div>
             </div>
+            <button className="sidebar-item" onClick={() => { setPwdError(''); setPwdForm({ oldPassword: '', newPassword: '', confirmPassword: '' }); setShowPwdModal(true); }} style={{ marginTop:4 }}>
+              <span className="item-icon">🔑</span>เปลี่ยนรหัสผ่าน
+            </button>
             <button className="sidebar-item" onClick={handleLogout} style={{ marginTop:4 }}>
               <span className="item-icon">🚪</span>ออกจากระบบ
             </button>
@@ -898,8 +927,39 @@ export default function AdminPage() {
       )}
 
       {/* TOASTS */}
+      {/* PASSWORD MODAL */}
+      {showPwdModal && (
+        <div className="modal-overlay" onClick={e => { if (e.target === e.currentTarget) setShowPwdModal(false); }}>
+          <div className="modal animate-slide-up" style={{ maxWidth: 400 }}>
+            <div className="modal-header">
+              <span className="modal-title">🔑 เปลี่ยนรหัสผ่าน</span>
+              <button className="modal-close" onClick={() => setShowPwdModal(false)}>✕</button>
+            </div>
+            <div className="modal-body">
+              {pwdError && <div className="alert alert-error" style={{ marginBottom:16 }}>{pwdError}</div>}
+              <div className="form-group">
+                <label className="form-label">รหัสผ่านเดิม <span>*</span></label>
+                <input className="form-control" type="password" value={pwdForm.oldPassword} onChange={e=>setPwdForm(f=>({...f,oldPassword:e.target.value}))} placeholder="••••••••" />
+              </div>
+              <div className="form-group">
+                <label className="form-label">รหัสผ่านใหม่ <span>*</span></label>
+                <input className="form-control" type="password" value={pwdForm.newPassword} onChange={e=>setPwdForm(f=>({...f,newPassword:e.target.value}))} placeholder="••••••••" />
+              </div>
+              <div className="form-group">
+                <label className="form-label">ยืนยันรหัสผ่านใหม่ <span>*</span></label>
+                <input className="form-control" type="password" value={pwdForm.confirmPassword} onChange={e=>setPwdForm(f=>({...f,confirmPassword:e.target.value}))} placeholder="••••••••" />
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button className="btn btn-outline" onClick={() => setShowPwdModal(false)}>ยกเลิก</button>
+              <button className="btn btn-primary" onClick={handlePwdChange} disabled={pwdSaving || !pwdForm.oldPassword || !pwdForm.newPassword}>{pwdSaving?'⏳ กำลังเปลี่ยน...':'💾 บันทึก'}</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="toast-container">
-        {toasts.map(t=><Toast key={t.id} msg={t.msg} type={t.type} onDone={()=>setToasts(p=>p.filter(x=>x.id!==t.id))} />)}
+        {toasts.map(t => <Toast key={t.id} msg={t.msg} type={t.type} onDone={() => setToasts(p => p.filter(x => x.id !== t.id))} />)}
       </div>
     </>
   );

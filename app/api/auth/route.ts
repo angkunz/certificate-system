@@ -3,7 +3,7 @@ export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { supabaseAdmin } from '@/lib/supabase';
-import { signToken, verifyToken } from '@/lib/auth';
+import { signToken, verifyToken, getSession } from '@/lib/auth';
 import { cookies } from 'next/headers';
 
 // POST: login / logout
@@ -55,6 +55,28 @@ export async function POST(request: NextRequest) {
   if (action === 'logout') {
     const cookieStore = await cookies();
     cookieStore.delete('auth_token');
+    return NextResponse.json({ success: true });
+  }
+
+  if (action === 'change_password') {
+    const session = await getSession();
+    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+    const { oldPassword, newPassword } = body;
+    if (!oldPassword || !newPassword) {
+      return NextResponse.json({ error: 'กรุณากรอกรหัสผ่านเดิมและรหัสผ่านใหม่' }, { status: 400 });
+    }
+
+    const { data: user } = await supabaseAdmin.from('users').select('*').eq('id', session.id).single();
+    if (!user) return NextResponse.json({ error: 'ไม่พบผู้ใช้' }, { status: 404 });
+
+    const isValid = await bcrypt.compare(oldPassword, user.password_hash);
+    if (!isValid) return NextResponse.json({ error: 'รหัสผ่านเดิมไม่ถูกต้อง' }, { status: 401 });
+
+    const hash = await bcrypt.hash(newPassword, 10);
+    const { error } = await supabaseAdmin.from('users').update({ password_hash: hash }).eq('id', session.id);
+    if (error) return NextResponse.json({ error }, { status: 500 });
+    
     return NextResponse.json({ success: true });
   }
 
