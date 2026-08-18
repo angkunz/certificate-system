@@ -139,56 +139,56 @@ export default function CertificateTemplate({
         onMouseDown={startDrag('logo')} onTouchStart={startDrag('logo')}>
         {org.logo_url
           ? <img src={org.logo_url} alt="logo" crossOrigin="anonymous"
-              style={{ height: `calc(clamp(32px,5vw,60px) * ${sz('logo')})`, width: 'auto', objectFit: 'contain', display: 'block' }} />
-          : <div style={{ width: `calc(clamp(32px,5vw,60px) * ${sz('logo')})`, height: `calc(clamp(32px,5vw,60px) * ${sz('logo')})`, borderRadius: 8, background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: `calc(clamp(16px,2.5vw,28px) * ${sz('logo')})`, color: 'white' }}>🏛️</div>
+              style={{ height: `calc(clamp(32px,5cqw,60px) * ${sz('logo')})`, width: 'auto', objectFit: 'contain', display: 'block' }} />
+          : <div style={{ width: `calc(clamp(32px,5cqw,60px) * ${sz('logo')})`, height: `calc(clamp(32px,5cqw,60px) * ${sz('logo')})`, borderRadius: 8, background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: `calc(clamp(16px,2.5cqw,28px) * ${sz('logo')})`, color: 'white' }}>🏛️</div>
         }
       </div>
 
       {/* ── Org Name ── */}
-      <div style={{ ...el('orgName'), ...hidden('orgName'), ...textStyle('orgName', 'rgba(255,255,255,0.95)'), fontWeight: textStyle('orgName', '').fontWeight ?? 700, fontSize: `calc(clamp(10px,1.4vw,18px) * ${sz('orgName')})`, maxWidth: '40%', lineHeight: 1.3 }}
+      <div style={{ ...el('orgName'), ...hidden('orgName'), ...textStyle('orgName', 'rgba(255,255,255,0.95)'), fontWeight: textStyle('orgName', '').fontWeight ?? 700, fontSize: `calc(clamp(10px,1.4cqw,18px) * ${sz('orgName')})`, maxWidth: '40%', lineHeight: 1.3 }}
         onMouseDown={startDrag('orgName')} onTouchStart={startDrag('orgName')}>
         {org.name}
       </div>
 
       {/* ── Title ── */}
-      <div style={{ ...el('title'), ...hidden('title'), fontFamily: "'Playfair Display','Sarabun',serif", fontSize: `calc(clamp(20px,3.5vw,48px) * ${sz('title')})`, fontWeight: textStyle('title', '').fontWeight ?? 700, letterSpacing: '0.08em', textShadow: '0 2px 8px rgba(0,0,0,0.4)', whiteSpace: 'nowrap', ...textStyle('title', '#fcd34d') }}
+      <div style={{ ...el('title'), ...hidden('title'), fontFamily: "'Playfair Display','Sarabun',serif", fontSize: `calc(clamp(20px,3.5cqw,48px) * ${sz('title')})`, fontWeight: textStyle('title', '').fontWeight ?? 700, letterSpacing: '0.08em', textShadow: '0 2px 8px rgba(0,0,0,0.4)', whiteSpace: 'nowrap', ...textStyle('title', '#fcd34d') }}
         onMouseDown={startDrag('title')} onTouchStart={startDrag('title')}>
         เกียรติบัตร
       </div>
 
       {/* ── Present Text ── */}
-      <div style={{ ...el('presentText'), ...hidden('presentText'), fontSize: `calc(clamp(11px,1.2vw,16px) * ${sz('presentText')})`, whiteSpace: 'nowrap', ...textStyle('presentText', 'rgba(255,255,255,0.8)') }}
+      <div style={{ ...el('presentText'), ...hidden('presentText'), fontSize: `calc(clamp(11px,1.2cqw,16px) * ${sz('presentText')})`, whiteSpace: 'nowrap', ...textStyle('presentText', 'rgba(255,255,255,0.8)') }}
         onMouseDown={startDrag('presentText')} onTouchStart={startDrag('presentText')}>
         มอบเกียรติบัตรฉบับนี้ให้แก่
       </div>
 
       {/* ── Recipient ── */}
-      <div style={{ ...el('recipient'), ...hidden('recipient'), fontFamily: "'Playfair Display','Sarabun',serif", fontSize: `calc(clamp(16px,2.8vw,36px) * ${sz('recipient')})`, fontWeight: textStyle('recipient', '').fontWeight ?? 700, textShadow: '0 2px 8px rgba(0,0,0,0.4)', whiteSpace: 'nowrap', maxWidth: '80%', overflow: 'hidden', textOverflow: 'ellipsis', ...textStyle('recipient', 'white') }}
+      <div style={{ ...el('recipient'), ...hidden('recipient'), fontFamily: "'Playfair Display','Sarabun',serif", fontSize: `calc(clamp(16px,2.8cqw,36px) * ${sz('recipient')})`, fontWeight: textStyle('recipient', '').fontWeight ?? 700, textShadow: '0 2px 8px rgba(0,0,0,0.4)', whiteSpace: 'nowrap', maxWidth: '80%', overflow: 'hidden', textOverflow: 'ellipsis', ...textStyle('recipient', 'white') }}
         onMouseDown={startDrag('recipient')} onTouchStart={startDrag('recipient')}>
         {recipient.full_name}
       </div>
 
       {/* ── Award ── */}
       {recipient.award && (
-        <div style={{ ...el('award'), ...hidden('award'), fontSize: `calc(clamp(11px,1.3vw,18px) * ${sz('award')})`, fontWeight: textStyle('award', '').fontWeight ?? 600, whiteSpace: 'nowrap', maxWidth: '70%', overflow: 'hidden', textOverflow: 'ellipsis', ...textStyle('award', '#fcd34d') }}
+        <div style={{ ...el('award'), ...hidden('award'), fontSize: `calc(clamp(11px,1.3cqw,18px) * ${sz('award')})`, fontWeight: textStyle('award', '').fontWeight ?? 600, whiteSpace: 'nowrap', maxWidth: '70%', overflow: 'hidden', textOverflow: 'ellipsis', ...textStyle('award', '#fcd34d') }}
           onMouseDown={startDrag('award')} onTouchStart={startDrag('award')}>
           {recipient.award}
         </div>
       )}
 
       {/* ── Divider ── */}
-      <div style={{ ...el('divider'), ...hidden('divider'), width: `calc(clamp(50px,8vw,100px) * ${sz('divider')})`, height: 2, background: layout.divider.color ? `linear-gradient(90deg,transparent,${layout.divider.color},transparent)` : 'linear-gradient(90deg,transparent,#fcd34d,transparent)' }}
+      <div style={{ ...el('divider'), ...hidden('divider'), width: `calc(clamp(50px,8cqw,100px) * ${sz('divider')})`, height: 2, background: layout.divider.color ? `linear-gradient(90deg,transparent,${layout.divider.color},transparent)` : 'linear-gradient(90deg,transparent,#fcd34d,transparent)' }}
         onMouseDown={startDrag('divider')} onTouchStart={startDrag('divider')} />
 
       {/* ── Activity ── */}
-      <div style={{ ...el('activity'), ...hidden('activity'), fontSize: `calc(clamp(12px,1.6vw,20px) * ${sz('activity')})`, fontWeight: textStyle('activity', '').fontWeight ?? 700, whiteSpace: 'nowrap', maxWidth: '80%', overflow: 'hidden', textOverflow: 'ellipsis', ...textStyle('activity', '#fcd34d') }}
+      <div style={{ ...el('activity'), ...hidden('activity'), fontSize: `calc(clamp(12px,1.6cqw,20px) * ${sz('activity')})`, fontWeight: textStyle('activity', '').fontWeight ?? 700, whiteSpace: 'nowrap', maxWidth: '80%', overflow: 'hidden', textOverflow: 'ellipsis', ...textStyle('activity', '#fcd34d') }}
         onMouseDown={startDrag('activity')} onTouchStart={startDrag('activity')}>
         {recipient.activity?.name}
       </div>
 
       {/* ── Description ── */}
       {(recipient.extra_details || recipient.activity?.description) && (
-        <div style={{ ...el('description'), ...hidden('description'), fontSize: `calc(clamp(10px,1.1vw,14px) * ${sz('description')})`, maxWidth: '70%', lineHeight: 1.5, ...textStyle('description', 'rgba(255,255,255,0.75)') }}
+        <div style={{ ...el('description'), ...hidden('description'), fontSize: `calc(clamp(10px,1.1cqw,14px) * ${sz('description')})`, maxWidth: '70%', lineHeight: 1.5, ...textStyle('description', 'rgba(255,255,255,0.75)') }}
           onMouseDown={startDrag('description')} onTouchStart={startDrag('description')}>
           {recipient.extra_details || recipient.activity?.description}
         </div>
@@ -196,7 +196,7 @@ export default function CertificateTemplate({
 
       {/* ── Date ── */}
       {certDate && (
-        <div style={{ ...el('date'), ...hidden('date'), fontSize: `calc(clamp(10px,1.1vw,14px) * ${sz('date')})`, whiteSpace: 'nowrap', ...textStyle('date', 'rgba(255,255,255,0.75)') }}
+        <div style={{ ...el('date'), ...hidden('date'), fontSize: `calc(clamp(10px,1.1cqw,14px) * ${sz('date')})`, whiteSpace: 'nowrap', ...textStyle('date', 'rgba(255,255,255,0.75)') }}
           onMouseDown={startDrag('date')} onTouchStart={startDrag('date')}>
           วันที่ {formatDate(certDate)}
         </div>
@@ -207,13 +207,13 @@ export default function CertificateTemplate({
         onMouseDown={startDrag('signature')} onTouchStart={startDrag('signature')}>
         {org.signature_url && (
           <img src={org.signature_url} alt="sig" crossOrigin="anonymous"
-            style={{ height: `calc(clamp(28px,4vw,50px) * ${sz('signature')})`, objectFit: 'contain', filter: 'brightness(0) invert(1)', marginBottom: 2 }} />
+            style={{ height: `calc(clamp(28px,4cqw,50px) * ${sz('signature')})`, objectFit: 'contain', filter: 'brightness(0) invert(1)', marginBottom: 2 }} />
         )}
-        <div style={{ width: `calc(clamp(70px,10vw,130px) * ${sz('signature')})`, height: 1, background: 'rgba(255,255,255,0.5)' }} />
-        <div style={{ fontSize: `calc(clamp(10px,1.1vw,14px) * ${sz('signature')})`, fontWeight: 700, whiteSpace: 'nowrap', marginTop: 2, ...textStyle('signature', 'white') }}>
+        <div style={{ width: `calc(clamp(70px,10cqw,130px) * ${sz('signature')})`, height: 1, background: 'rgba(255,255,255,0.5)' }} />
+        <div style={{ fontSize: `calc(clamp(10px,1.1cqw,14px) * ${sz('signature')})`, fontWeight: 700, whiteSpace: 'nowrap', marginTop: 2, ...textStyle('signature', 'white') }}>
           {org.executive_name}
         </div>
-        <div style={{ fontSize: `calc(clamp(9px,0.9vw,12px) * ${sz('signature')})`, whiteSpace: 'nowrap', color: layout.signature.color || 'rgba(255,255,255,0.7)' }}>
+        <div style={{ fontSize: `calc(clamp(9px,0.9cqw,12px) * ${sz('signature')})`, whiteSpace: 'nowrap', color: layout.signature.color || 'rgba(255,255,255,0.7)' }}>
           {org.executive_position}
         </div>
       </div>
@@ -222,13 +222,13 @@ export default function CertificateTemplate({
       {qrDataUrl && (
         <div style={{ ...el('qr'), ...hidden('qr'), display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}
           onMouseDown={startDrag('qr')} onTouchStart={startDrag('qr')}>
-          <div style={{ fontSize: `calc(clamp(8px,0.9vw,11px) * ${sz('qr')})`, color: 'rgba(255,255,255,0.6)', whiteSpace: 'nowrap' }}>
+          <div style={{ fontSize: `calc(clamp(8px,0.9cqw,11px) * ${sz('qr')})`, color: 'rgba(255,255,255,0.6)', whiteSpace: 'nowrap' }}>
             ตรวจสอบเกียรติบัตร
           </div>
-          <div style={{ background: 'white', borderRadius: 6, padding: 4, width: `calc(clamp(50px,6vw,80px) * ${sz('qr')})`, height: `calc(clamp(50px,6vw,80px) * ${sz('qr')})`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ background: 'white', borderRadius: 6, padding: 4, width: `calc(clamp(50px,6cqw,80px) * ${sz('qr')})`, height: `calc(clamp(50px,6cqw,80px) * ${sz('qr')})`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <img src={qrDataUrl} alt="qr" style={{ width: '100%', height: '100%' }} />
           </div>
-          <div style={{ fontSize: `calc(clamp(7px,0.7vw,9px) * ${sz('qr')})`, color: 'rgba(255,255,255,0.5)', fontFamily: 'monospace', maxWidth: `calc(clamp(50px,6vw,80px) * ${sz('qr')})`, wordBreak: 'break-all', textAlign: 'center' }}>
+          <div style={{ fontSize: `calc(clamp(7px,0.7cqw,9px) * ${sz('qr')})`, color: 'rgba(255,255,255,0.5)', fontFamily: 'monospace', maxWidth: `calc(clamp(50px,6cqw,80px) * ${sz('qr')})`, wordBreak: 'break-all', textAlign: 'center' }}>
             {recipient.cert_code}
           </div>
         </div>
@@ -236,7 +236,7 @@ export default function CertificateTemplate({
 
       {/* Edit mode hint */}
       {editMode && (
-        <div style={{ position: 'absolute', bottom: '2%', left: '50%', transform: 'translateX(-50%)', background: 'rgba(0,0,0,0.75)', color: 'white', fontSize: 'clamp(8px,0.9vw,11px)', padding: '3px 12px', borderRadius: 20, whiteSpace: 'nowrap', pointerEvents: 'none', zIndex: 20 }}>
+        <div style={{ position: 'absolute', bottom: '2%', left: '50%', transform: 'translateX(-50%)', background: 'rgba(0,0,0,0.75)', color: 'white', fontSize: 'clamp(8px,0.9cqw,11px)', padding: '3px 12px', borderRadius: 20, whiteSpace: 'nowrap', pointerEvents: 'none', zIndex: 20 }}>
           🖱️ ลากองค์ประกอบเพื่อย้ายตำแหน่ง
         </div>
       )}

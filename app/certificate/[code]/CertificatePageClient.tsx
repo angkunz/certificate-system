@@ -13,9 +13,8 @@ export default function CertificatePageClient({ recipient, org }: { recipient: R
   const [qrDataUrl, setQrDataUrl] = useState('');
 
   useEffect(() => {
-    const url = process.env.NEXT_PUBLIC_APP_URL
-      ? `${process.env.NEXT_PUBLIC_APP_URL}/certificate/${recipient.cert_code}`
-      : window.location.href;
+    const base = process.env.NEXT_PUBLIC_APP_URL || window.location.origin;
+    const url = `${base}/certificate/${recipient.cert_code}`;
     QRCode.toDataURL(url, { width: 140, margin: 1 }).then(setQrDataUrl).catch(() => {});
   }, [recipient.cert_code]);
 

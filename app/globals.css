@@ -883,6 +883,8 @@ tr:hover td { background: var(--surface-2); }
   border-radius: var(--radius-lg);
   overflow: hidden;
   box-shadow: var(--shadow-xl);
+  container-type: inline-size;
+  container-name: cert;
 }
 
 .cert-bg {
