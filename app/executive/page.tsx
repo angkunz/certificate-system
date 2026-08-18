@@ -115,7 +115,7 @@ export default function ExecutivePage() {
 
   async function openPreview(r: Recipient) {
     setPreviewRecip(r);
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || window.location.origin;
+    const baseUrl = window.location.origin;
     try { setPreviewQR(await QRCode.toDataURL(`${baseUrl}/certificate/${r.cert_code}`, { width: 140, margin: 1 })); } catch { setPreviewQR(''); }
   }
 

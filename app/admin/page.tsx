@@ -233,7 +233,7 @@ export default function AdminPage() {
   async function openPreview(r: Recipient) {
     const act = r.activity || activities.find(a => a.id === r.activity_id);
     setPreviewRecip({ ...r, activity: act });
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || window.location.origin;
+    const baseUrl = window.location.origin;
     try { setPreviewQR(await QRCode.toDataURL(`${baseUrl}/certificate/${r.cert_code}`, { width: 140, margin: 1 })); } catch { setPreviewQR(''); }
   }
 

@@ -61,7 +61,7 @@ export default function PublicPage() {
 
   async function openCertificate(recipient: Recipient) {
     setSelectedCert(recipient);
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || window.location.origin;
+    const baseUrl = window.location.origin;
     const url = `${baseUrl}/certificate/${recipient.cert_code}`;
     try { setQrDataUrl(await QRCode.toDataURL(url, { width: 160, margin: 1 })); } catch { setQrDataUrl(''); }
   }
