@@ -27,8 +27,24 @@ export default function CertificatePageClient({ recipient, org }: { recipient: R
 
   async function downloadCert(type: 'png' | 'pdf') {
     const el = document.getElementById('cert-page-render'); if (!el) return;
+    
+    // Temporarily remove transform for high-res capture
+    const originalTransform = el.style.transform;
+    el.style.transform = 'scale(1)';
+    await new Promise((resolve) => setTimeout(resolve, 150)); // wait for DOM to update
+
     const { default: html2canvas } = await import('html2canvas');
-    const canvas = await html2canvas(el, { scale: 2, useCORS: true, allowTaint: true, logging: false });
+    const canvas = await html2canvas(el, { 
+      scale: 3, // High resolution
+      useCORS: true, // Allow cross-origin images
+      allowTaint: false, // Prevent tainting canvas so toDataURL works
+      logging: false,
+      backgroundColor: '#ffffff'
+    });
+
+    // Restore transform
+    el.style.transform = originalTransform;
+
     if (type === 'png') {
       const link = document.createElement('a');
       link.download = `เกียรติบัตร-${recipient.full_name}.png`;
