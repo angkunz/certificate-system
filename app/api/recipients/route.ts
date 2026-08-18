@@ -3,10 +3,8 @@ import { supabaseAdmin } from '@/lib/supabase';
 import { getSession } from '@/lib/auth';
 
 function generateCertCode(activityName: string): string {
-  const prefix = activityName
-    .replace(/[^a-zA-Zก-๙]/g, '')
-    .substring(0, 3)
-    .toUpperCase() || 'CERT';
+  const engLetters = activityName.replace(/[^a-zA-Z0-9]/g, '');
+  const prefix = engLetters.substring(0, 3).toUpperCase() || 'CERT';
   const timestamp = Date.now().toString(36).toUpperCase();
   const random = Math.random().toString(36).substring(2, 6).toUpperCase();
   return `${prefix}-${timestamp}-${random}`;
@@ -18,7 +16,8 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const activityId = searchParams.get('activity_id');
   const q = searchParams.get('q');
-  const code = searchParams.get('code');
+  const codeParam = searchParams.get('code');
+  const code = codeParam ? decodeURIComponent(codeParam) : null;
   const pending = searchParams.get('pending');
 
   // Public: search by name or code

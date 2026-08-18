@@ -6,7 +6,8 @@ import CertificatePageClient from './CertificatePageClient';
 interface Props { params: Promise<{ code: string }>; }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { code } = await params;
+  const { code: rawCode } = await params;
+  const code = decodeURIComponent(rawCode);
   const { data } = await supabaseAdmin.from('recipients').select('full_name').eq('cert_code', code).single();
   return {
     title: data ? `เกียรติบัตร — ${data.full_name}` : 'เกียรติบัตร',
@@ -15,7 +16,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function CertPage({ params }: Props) {
-  const { code } = await params;
+  const { code: rawCode } = await params;
+  const code = decodeURIComponent(rawCode);
 
   const { data: recipient } = await supabaseAdmin
     .from('recipients')
