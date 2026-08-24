@@ -24,17 +24,99 @@ export default function CertificateClient({ recipient, org }: { recipient: Recip
   async function downloadCert(type: 'png' | 'pdf') {
     const el = document.getElementById('cert-page-render');
     if (!el) return;
+
+    // ── 1. Load fonts as base64 and register via FontFace API ──────────────
+    async function fetchFontBase64(url: string): Promise<string> {
+      const res = await fetch(url);
+      const buf = await res.arrayBuffer();
+      const bytes = new Uint8Array(buf);
+      // chunk to avoid spread/call stack overflow on large files
+      const CHUNK = 8192;
+      let binary = '';
+      for (let i = 0; i < bytes.length; i += CHUNK) {
+        binary += String.fromCharCode(...bytes.subarray(i, i + CHUNK));
+      }
+      return btoa(binary);
+    }
+
+    try {
+      // Fetch self-hosted fonts from /public/fonts/ (no CORS issues)
+      const [sarabunRegB64, sarabunBoldB64, playfairB64] = await Promise.all([
+        fetchFontBase64('/fonts/Sarabun-Regular.ttf'),
+        fetchFontBase64('/fonts/Sarabun-Bold.ttf'),
+        fetchFontBase64('/fonts/PlayfairDisplay-Bold.ttf'),
+      ]);
+
+      const fontFaces = [
+        new FontFace('Sarabun', `url(data:font/truetype;base64,${sarabunRegB64})`, { weight: '400' }),
+        new FontFace('Sarabun', `url(data:font/truetype;base64,${sarabunBoldB64})`, { weight: '700' }),
+        new FontFace('Playfair Display', `url(data:font/truetype;base64,${playfairB64})`, { weight: '700' }),
+      ];
+      await Promise.all(fontFaces.map(f => f.load().then(loaded => document.fonts.add(loaded))));
+    } catch {
+      // font fetch failed — continue anyway with system fonts
+    }
+
+    // ── 2. Clone cert element at a fixed 842×595 px (A4 landscape) ─────────
+    const CERT_W = 842;
+    const CERT_H = 595;
+
+    const container = document.createElement('div');
+    container.style.cssText = `position:fixed;left:-9999px;top:-9999px;width:${CERT_W}px;height:${CERT_H}px;overflow:hidden;z-index:-1;`;
+    document.body.appendChild(container);
+
+    const clone = el.cloneNode(true) as HTMLElement;
+    clone.style.cssText = `position:absolute;inset:0;width:${CERT_W}px;height:${CERT_H}px;`;
+    container.appendChild(clone);
+
+    // Scale ratio: actual rendered width → 842
+    const ratio = CERT_W / el.getBoundingClientRect().width;
+
+    // Fix all font-sizes from computed styles (resolves clamp/vw/cqw to px)
+    const sourceEls = Array.from(el.querySelectorAll('*')) as HTMLElement[];
+    const cloneEls  = Array.from(clone.querySelectorAll('*')) as HTMLElement[];
+    sourceEls.forEach((src, i) => {
+      const computed = window.getComputedStyle(src);
+      const destEl   = cloneEls[i] as HTMLElement;
+      if (!destEl) return;
+      const fs = parseFloat(computed.fontSize);
+      if (fs) destEl.style.fontSize = `${fs * ratio}px`;
+      destEl.style.lineHeight = computed.lineHeight;
+      // Ensure font-family is applied explicitly
+      destEl.style.fontFamily = computed.fontFamily;
+      destEl.style.fontWeight = computed.fontWeight;
+      destEl.style.letterSpacing = computed.letterSpacing;
+    });
+
+    // Inject embedded font-face CSS into the clone so html2canvas sees it
+    const style = document.createElement('style');
+    style.textContent = `* { -webkit-font-smoothing: antialiased; }`;
+    clone.insertBefore(style, clone.firstChild);
+
+    // ── 3. Render with html2canvas ─────────────────────────────────────────
     const { default: html2canvas } = await import('html2canvas');
-    const canvas = await html2canvas(el, { scale: 2, useCORS: true, allowTaint: true });
+    const canvas = await html2canvas(container, {
+      scale: 2,
+      useCORS: true,
+      allowTaint: false,
+      width: CERT_W,
+      height: CERT_H,
+      windowWidth: CERT_W,
+      windowHeight: CERT_H,
+      logging: false,
+    });
+
+    document.body.removeChild(container);
+
     if (type === 'png') {
       const link = document.createElement('a');
       link.download = `เกียรติบัตร-${recipient.full_name}.png`;
-      link.href = canvas.toDataURL();
+      link.href = canvas.toDataURL('image/png');
       link.click();
     } else {
       const { jsPDF } = await import('jspdf');
       const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
-      pdf.addImage(canvas.toDataURL(), 'PNG', 0, 0, 297, 210);
+      pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, 297, 210);
       pdf.save(`เกียรติบัตร-${recipient.full_name}.pdf`);
     }
   }
