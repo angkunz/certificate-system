@@ -77,6 +77,12 @@ export default function AdminPage() {
   const [previewRecip, setPreviewRecip] = useState<Recipient | null>(null);
   const [previewQR, setPreviewQR] = useState('');
 
+  // Batch download
+  const [downloadAllLoading, setDownloadAllLoading] = useState(false);
+  const [downloadAllProgress, setDownloadAllProgress] = useState({ current: 0, total: 0 });
+  const [batchRenderRecip, setBatchRenderRecip] = useState<Recipient | null>(null);
+  const [batchRenderQR, setBatchRenderQR] = useState('');
+
   // Filters
   const [recipActFilter, setRecipActFilter] = useState('');
   const [recipStatusFilter, setRecipStatusFilter] = useState('');
@@ -292,6 +298,70 @@ export default function AdminPage() {
     }
   }
 
+  async function downloadAllCerts() {
+    if (!org || !filteredRecipients.length) return;
+    setDownloadAllLoading(true);
+    setDownloadAllProgress({ current: 0, total: filteredRecipients.length });
+
+    try {
+      const JSZip = (await import('jszip')).default;
+      const { default: html2canvas } = await import('html2canvas');
+      const zip = new JSZip();
+
+      for (let i = 0; i < filteredRecipients.length; i++) {
+        const r = filteredRecipients[i];
+        setDownloadAllProgress({ current: i + 1, total: filteredRecipients.length });
+
+        // Generate QR for this recipient
+        const baseUrl = window.location.origin;
+        let qr = '';
+        try { qr = await QRCode.toDataURL(`${baseUrl}/certificate/${r.cert_code}`, { width: 140, margin: 1 }); } catch { /* skip */ }
+
+        const act = activities.find(a => a.id === r.activity_id);
+        setBatchRenderRecip({ ...r, activity: act });
+        setBatchRenderQR(qr);
+
+        // Wait for DOM to update
+        await new Promise(resolve => setTimeout(resolve, 300));
+
+        const el = document.getElementById('batch-cert-render');
+        if (!el) continue;
+
+        const canvas = await html2canvas(el, {
+          scale: 3,
+          useCORS: true,
+          allowTaint: false,
+          logging: false,
+          backgroundColor: '#ffffff',
+        });
+
+        const blob = await new Promise<Blob>(resolve => canvas.toBlob(b => resolve(b!), 'image/png'));
+        const safeName = r.full_name.replace(/[^ก-๙a-zA-Z0-9\s_-]/g, '').trim() || r.cert_code;
+        zip.file(`เกียรติบัตร-${safeName}.png`, blob);
+      }
+
+      setBatchRenderRecip(null);
+      setBatchRenderQR('');
+
+      const zipBlob = await zip.generateAsync({ type: 'blob' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(zipBlob);
+      const actLabel = recipActFilter ? (activities.find(a => a.id === recipActFilter)?.name || 'เกียรติบัตร') : 'เกียรติบัตรทั้งหมด';
+      link.download = `${actLabel}.zip`;
+      link.click();
+      URL.revokeObjectURL(link.href);
+      toast(`ดาวน์โหลด ${filteredRecipients.length} เกียรติบัตรสำเร็จ`);
+    } catch (err) {
+      console.error(err);
+      toast('เกิดข้อผิดพลาด ลองใหม่อีกครั้ง', 'error');
+    } finally {
+      setDownloadAllLoading(false);
+      setDownloadAllProgress({ current: 0, total: 0 });
+      setBatchRenderRecip(null);
+      setBatchRenderQR('');
+    }
+  }
+
   function formatDate(d: string) {
     if (!d) return '';
     const date = new Date(d);
@@ -501,7 +571,21 @@ export default function AdminPage() {
               <div className="animate-fade-in">
                 <div className="page-header">
                   <div><div className="page-title">รายชื่อผู้รับเกียรติบัตร</div><div className="page-subtitle">จัดการรายชื่อ เพิ่ม หรือ Import CSV</div></div>
-                  <button className="btn btn-primary" onClick={() => setShowRecipModal(true)}>+ เพิ่มรายชื่อ</button>
+                  <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
+                    {filteredRecipients.length > 0 && (
+                      <button
+                        className="btn btn-secondary"
+                        onClick={downloadAllCerts}
+                        disabled={downloadAllLoading}
+                        title={`ดาวน์โหลดเกียรติบัตร ${filteredRecipients.length} คน เป็น ZIP`}
+                      >
+                        {downloadAllLoading
+                          ? `⏳ กำลังสร้าง... (${downloadAllProgress.current}/${downloadAllProgress.total})`
+                          : `⬇️ ดาวน์โหลดทั้งหมด (${filteredRecipients.length})`}
+                      </button>
+                    )}
+                    <button className="btn btn-primary" onClick={() => setShowRecipModal(true)}>+ เพิ่มรายชื่อ</button>
+                  </div>
                 </div>
                 <div style={{ display:'flex', gap:12, marginBottom:16, flexWrap:'wrap' }}>
                   <select className="form-control" style={{ width:'auto', minWidth:180 }} value={recipActFilter} onChange={e => setRecipActFilter(e.target.value)}>
@@ -961,6 +1045,62 @@ export default function AdminPage() {
       <div className="toast-container">
         {toasts.map(t => <Toast key={t.id} msg={t.msg} type={t.type} onDone={() => setToasts(p => p.filter(x => x.id !== t.id))} />)}
       </div>
+
+      {/* Hidden element for batch certificate rendering */}
+      {batchRenderRecip && org && (
+        <div
+          aria-hidden="true"
+          style={{
+            position: 'fixed',
+            top: '-9999px',
+            left: '-9999px',
+            width: 842,
+            pointerEvents: 'none',
+            zIndex: -1,
+            overflow: 'hidden',
+          }}
+        >
+          <CertificateTemplate
+            id="batch-cert-render"
+            org={org}
+            recipient={batchRenderRecip}
+            qrDataUrl={batchRenderQR}
+            layout={certLayout}
+          />
+        </div>
+      )}
+
+      {/* Download-all progress overlay */}
+      {downloadAllLoading && (
+        <div style={{
+          position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.65)', zIndex: 9999,
+          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 20,
+        }}>
+          <div style={{
+            background: 'var(--surface)', borderRadius: 'var(--radius-xl)', padding: '36px 48px',
+            minWidth: 320, textAlign: 'center', boxShadow: '0 24px 64px rgba(0,0,0,0.4)',
+          }}>
+            <div style={{ fontSize: 40, marginBottom: 16 }}>📦</div>
+            <div style={{ fontSize: 18, fontWeight: 700, marginBottom: 8 }}>กำลังสร้างเกียรติบัตร...</div>
+            <div style={{ fontSize: 14, color: 'var(--text-muted)', marginBottom: 20 }}>
+              กรุณารอสักครู่ อย่าปิดหน้าต่างนี้
+            </div>
+            {/* Progress bar */}
+            <div style={{ background: 'var(--bg)', borderRadius: 999, height: 10, overflow: 'hidden', marginBottom: 12 }}>
+              <div style={{
+                background: 'linear-gradient(90deg, var(--primary), var(--accent))',
+                height: '100%',
+                width: `${downloadAllProgress.total ? (downloadAllProgress.current / downloadAllProgress.total) * 100 : 0}%`,
+                borderRadius: 999,
+                transition: 'width 0.3s ease',
+              }} />
+            </div>
+            <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>
+              {downloadAllProgress.current} / {downloadAllProgress.total} รายการ
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
