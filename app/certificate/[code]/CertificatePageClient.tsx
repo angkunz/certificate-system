@@ -28,10 +28,57 @@ export default function CertificatePageClient({ recipient, org }: { recipient: R
   async function downloadCert(type: 'png' | 'pdf') {
     const el = document.getElementById('cert-page-render'); if (!el) return;
     
-    // Temporarily remove transform for high-res capture
+    // ── 1. Load fonts as base64 and register via FontFace API to prevent font issues ──
+    async function fetchFontBase64(url: string): Promise<string> {
+      try {
+        const res = await fetch(url);
+        const buf = await res.arrayBuffer();
+        const bytes = new Uint8Array(buf);
+        const CHUNK = 8192;
+        let binary = '';
+        for (let i = 0; i < bytes.length; i += CHUNK) {
+          binary += String.fromCharCode(...bytes.subarray(i, i + CHUNK));
+        }
+        return btoa(binary);
+      } catch (e) {
+        return '';
+      }
+    }
+
+    try {
+      const [sarabunRegB64, sarabunBoldB64, playfairB64] = await Promise.all([
+        fetchFontBase64('/fonts/Sarabun-Regular.ttf'),
+        fetchFontBase64('/fonts/Sarabun-Bold.ttf'),
+        fetchFontBase64('/fonts/PlayfairDisplay-Bold.ttf'),
+      ]);
+
+      if (sarabunRegB64) {
+        const fontFaces = [
+          new FontFace('Sarabun', `url(data:font/truetype;base64,${sarabunRegB64})`, { weight: '400' }),
+          new FontFace('Sarabun', `url(data:font/truetype;base64,${sarabunBoldB64})`, { weight: '700' }),
+          new FontFace('Playfair Display', `url(data:font/truetype;base64,${playfairB64})`, { weight: '700' }),
+        ];
+        await Promise.all(fontFaces.map(f => f.load().then(loaded => document.fonts.add(loaded))));
+        await document.fonts.ready;
+      }
+    } catch {
+      // ignore
+    }
+
+    // Temporarily remove transform and parent overflow for high-res capture
     const originalTransform = el.style.transform;
+    const parent = el.parentElement;
+    const originalOverflow = parent ? parent.style.overflow : '';
+    const originalWidth = parent ? parent.style.width : '';
+    const originalHeight = parent ? parent.style.height : '';
+    
+    if (parent) {
+      parent.style.overflow = 'visible';
+      parent.style.width = '842px';
+      parent.style.height = '595px';
+    }
     el.style.transform = 'scale(1)';
-    await new Promise((resolve) => setTimeout(resolve, 150)); // wait for DOM to update
+    await new Promise((resolve) => setTimeout(resolve, 200)); // wait for DOM to update
 
     const { default: html2canvas } = await import('html2canvas');
     const canvas = await html2canvas(el, { 
@@ -42,17 +89,28 @@ export default function CertificatePageClient({ recipient, org }: { recipient: R
       backgroundColor: '#ffffff'
     });
 
-    // Restore transform
+    // Restore transform and parent styles
+    if (parent) {
+      parent.style.overflow = originalOverflow;
+      parent.style.width = originalWidth;
+      parent.style.height = originalHeight;
+    }
     el.style.transform = originalTransform;
 
     if (type === 'png') {
       const link = document.createElement('a');
       link.download = `เกียรติบัตร-${recipient.full_name}.png`;
-      link.href = canvas.toDataURL('image/png'); link.click();
+      link.href = canvas.toDataURL('image/png');
+      document.body.appendChild(link); // Append to body for mobile Safari
+      link.click();
+      document.body.removeChild(link);
     } else {
       const { jsPDF } = await import('jspdf');
       const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
-      pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, 297, 210);
+      const imgW = 297;
+      const imgH = (canvas.height / canvas.width) * imgW;
+      const yOffset = (210 - imgH) / 2;
+      pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, yOffset > 0 ? yOffset : 0, imgW, imgH);
       pdf.save(`เกียรติบัตร-${recipient.full_name}.pdf`);
     }
   }
